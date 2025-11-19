@@ -1,0 +1,106 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Photo Buddy - Find Travel Photo Partners{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block extra_css %}{% endblock %}
+    <!-- Leaflet for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-camera"></i>
+                <span>Photo Buddy</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="{% url 'map' %}" class="nav-link">Find Buddies</a>
+                <div class="dropdown nav-link" style="display:inline-block; position:relative;">
+                    <button class="dropbtn">My Matches <i class="fa fa-caret-down"></i></button>
+                    <div class="dropdown-content">
+                    <a href="{% url 'active_matches' %}">Active Matches</a>
+                    <a href="{% url 'match_requests' %}">Match Requests</a>
+                </div>
+            </div>
+                <a href="{% url 'profile' %}" class="nav-link">Profile</a>
+            </div>
+            <div class="nav-actions">
+                {% if request.session.user_id %}
+                    <div class="user-menu">
+                        <img src="{% if request.session.profile_picture_url %}{{ request.session.profile_picture_url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" 
+                             alt="Profile" class="avatar">
+                        <span>{{ request.session.username }}</span>
+                        <div class="dropdown">
+                            <a href="{% url 'profile' %}">Profile</a>
+                            <a href="/settings">Settings</a>
+                            <a href="{% url 'logout' %}">Logout</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+                    <a href="{% url 'register' %}" class="btn btn-primary">Sign Up</a>
+                {% endif %}
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Main Content (map and all other child page content will appear here) -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Photo Buddy</h3>
+                    <p>Connect with fellow travelers for mutual photo assistance</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="/about">About</a>
+                    <a href="/how-it-works">How It Works</a>
+                    <a href="/safety">Safety Tips</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <a href="/terms">Terms of Service</a>
+                    <a href="/privacy">Privacy Policy</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Photo Buddy. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <!-- JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

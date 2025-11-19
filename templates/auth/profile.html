@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block title %}Your Profile | Photo Buddy{% endblock %}
+
+{% block content %}
+<section class="profile-section">
+    <div class="container">
+        <div class="card" style="max-width:500px;margin:auto;">
+            <h2 class="card-header">Your Profile</h2>
+            <div class="profile-avatar" style="text-align:center;">
+                <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" alt="Profile Picture" class="avatar" style="width:100px;height:100px;">
+            </div>
+            <div class="profile-details" style="margin-top:18px;">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" value="{{ user.username }}" class="form-input" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" value="{{ user.email }}" class="form-input" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bio</label>
+                    <textarea class="form-input" rows="3" disabled>{{ profile.bio }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Photos Taken For Others</label>
+                    <input type="text" value="{{ profile.photos_taken_for_others }}" class="form-input" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Photos Received</label>
+                    <input type="text" value="{{ profile.photos_received }}" class="form-input" disabled>
+                </div>
+                <div style="margin-top:24px;text-align:center;">
+                    <a href="/profile/edit" class="btn btn-secondary btn-lg">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

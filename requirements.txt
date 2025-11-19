@@ -1,0 +1,43 @@
+# Core Framework
+Django==5.0.0
+djangorestframework==3.14.0
+
+# Database
+psycopg2-binary==2.9.9  # PostgreSQL (use for production)
+
+# Real-time features
+channels==4.0.0
+channels-redis==4.1.0
+daphne==4.0.0
+
+# Authentication
+djangorestframework-simplejwt==5.3.1
+django-allauth==0.57.0
+
+# Location services
+geopy==2.4.1
+django-location-field==2.7.0
+
+# Image handling
+Pillow==10.1.0
+django-imagekit==5.0.0
+
+# Cloud storage
+cloudinary==1.37.0
+django-cloudinary-storage==0.3.0
+
+# API & utilities
+django-cors-headers==4.3.1
+python-dotenv==1.0.0
+requests==2.31.0
+
+# Google Maps
+googlemaps==4.10.0
+
+# Environment & Config
+python-decouple==3.8
+
+# Testing
+pytest==7.4.3
+pytest-django==4.7.0
+

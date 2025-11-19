@@ -1,0 +1,40 @@
+.map-section {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+#map {
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.user-list {
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    border-radius: 12px;
+    max-width: 600px;
+    margin: 2rem auto;
+}
+
+.user-list h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.user-list ul {
+    list-style: none;
+}
+
+.user-list li {
+    font-size: 1.1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #map {
+        height: 300px;
+    }
+}

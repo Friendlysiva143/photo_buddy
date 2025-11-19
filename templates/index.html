@@ -1,0 +1,177 @@
+<!-- templates/index.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    Never Miss a <span class="highlight">Perfect Shot</span> Again
+                </h1>
+                <p class="hero-description">
+                    Connect with fellow travelers nearby for mutual photo assistance. 
+                    No more awkward stranger requests or missing memories!
+                </p>
+                <div class="hero-actions">
+                    {% if request.session.user_id %}
+                        <a href="{% url 'map' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-rocket"></i> Find Buddies
+                        </a>
+                    {% else %}
+                        <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-rocket"></i> Start Now - It's Free
+                        </a>
+                    {% endif %}
+
+                    <a href="#how-it-works" class="btn btn-outline btn-lg">
+                        <i class="fas fa-play-circle"></i> See How It Works
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number">10K+</div>
+                        <div class="stat-label">Active Users</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">50K+</div>
+                        <div class="stat-label">Photos Exchanged</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">4.9★</div>
+                        <div class="stat-label">Average Rating</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="{% static 'images/logo.png' %}" alt="Photo Buddy">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works" id="how-it-works">
+    <div class="container">
+        <h2 class="section-title">How Photo Buddy Works</h2>
+        <p class="section-subtitle">Get amazing travel photos in 4 simple steps</p>
+        
+        <div class="steps">
+            <div class="step">
+                <div class="step-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h3>1. Check In</h3>
+                <p>Open the app at your location and check in to let others know you're looking for a photo buddy</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>2. Find Nearby Users</h3>
+                <p>See other travelers nearby who also need photo help. View their profiles and ratings</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-icon">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <h3>3. Connect & Meet</h3>
+                <p>Send a match request, chat to coordinate, and meet up at the spot</p>
+            </div>
+            
+            <div class="step">
+                <div class="step-icon">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <h3>4. Exchange Photos</h3>
+                <p>Take awesome photos for each other, share them, and rate your experience</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">Why Choose Photo Buddy?</h2>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3>Instant Matching</h3>
+                <p>Find photo buddies in real-time within 500 meters of your location</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Safe & Verified</h3>
+                <p>User ratings, verified profiles, and public location meetups ensure safety</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3>Introvert Friendly</h3>
+                <p>No more awkward stranger approaches. Connect through the app first</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <h3>100% Free</h3>
+                <p>No hidden fees. Save money on expensive travel photographers</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h3>In-App Chat</h3>
+                <p>Coordinate meetups easily with built-in real-time messaging</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h3>Gamification</h3>
+                <p>Earn credits and badges for helping others. Build your reputation</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to Capture Better Memories?</h2>
+            <p>Join thousands of travelers who never miss a perfect shot</p>
+            {% if request.session.user_id %}
+                <a href="{% url 'map' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-rocket"></i> Find Buddies
+                </a>
+            {% else %}
+                <a href="{% url 'register' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket"></i> Start Now - It's Free
+                </a>
+            {% endif %}
+
+        </div>
+    </div>
+</section>
+{% endblock %}

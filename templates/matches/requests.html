@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/matches.css' %}">
+{% endblock %}
+
+{% block title %}Match Requests | Photo Buddy{% endblock %}
+
+{% block content %}
+<section class="matches-section">
+    <div class="container">
+        <h2 class="section-title">📨 Match Requests</h2>
+        {% if match_requests %}
+            {% for req in match_requests %}
+                <div class="match-card">
+                    <img src="{{ req.user.profile_picture.url|default_if_none:'/static/images/default-avatar.png' }}" class="avatar">
+                    <div>
+                        <h3>{{ req.user.username }}</h3>
+                        <p>Requested on: {{ req.request_date }}</p>
+                        <p>Location: {{ req.location }}</p>
+                    </div>
+                    <form method="POST" action="/matches/{{ req.id }}/accept/" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">Accept</button>
+                    </form>
+                    <form method="POST" action="/matches/{{ req.id }}/decline/" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Decline</button>
+                    </form>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="empty-msg">No match requests yet.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/matches.css' %}">
+{% endblock %}
+
+{% block title %}Active Matches | Photo Buddy{% endblock %}
+
+{% block content %}
+<section class="matches-section">
+    <div class="container">
+        <h2 class="section-title">🟢 Active Matches</h2>
+        {% if active_matches %}
+            {% for match in active_matches %}
+                <div class="match-card">
+                    <img src="{{ match.user.profile_picture.url|default_if_none:'/static/images/default-avatar.png' }}" class="avatar">
+                    <div>
+                        <h3>{{ match.user.username }}</h3>
+                        <p>Buddied up on: {{ match.matched_date }}</p>
+                        <p>Location: {{ match.location }}</p>
+                    </div>
+                    <a href="/chat/{{ match.id }}" class="btn btn-chat">Chat</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="empty-msg">No active matches yet.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

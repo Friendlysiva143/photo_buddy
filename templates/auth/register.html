@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block title %}Register | Photo Buddy{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="container">
+        <div class="card" style="max-width:410px;margin:auto;">
+            <h2 class="card-header">Create Your Photo Buddy Account</h2>
+            {% if messages %}
+            <div id="popup-message" class="popup-message">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form class="auth-form" method="POST" action="{% url 'register' %}">
+                {% csrf_token %} <!-- (enable when backend is ready) -->
+                {{ form.as_p }}
+
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" id="username" name="username" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" name="email" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" name="password" class="form-input" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">Sign Up</button>
+                <div class="form-foot">
+                    <span>Already have an account?</span>
+                    <a href="{% url 'login' %}" class="btn btn-outline btn-sm" style="margin-left:10px;">Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block extra_js %}
+<script>
+window.onload = function() {
+    var popup = document.getElementById('popup-message');
+    if (popup) {
+        setTimeout(function() {
+            popup.style.display = 'none';
+        }, 3500); // Visible for 3.5 seconds
+    }
+}
+</script>
+{% endblock %}
