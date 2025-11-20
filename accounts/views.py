@@ -50,7 +50,7 @@ def login(request):
             request.session['user_id'] = user.id
             request.session['username'] = user.username
             messages.success(request, f"Welcome, {user.username}!")
-            return redirect('profile')
+            return redirect('/')
         else:
             messages.error(request, 'Invalid credentials!')
             return render(request, 'auth/login.html')
@@ -68,3 +68,43 @@ def logout(request):
     request.session.flush()
     messages.success(request, 'Logged out!')
     return redirect('login')
+
+
+def edit_profile(request):
+    user_id = request.session.get('user_id')
+    if not user_id:
+        return redirect('login')
+    user = CustomUser.objects.get(id=user_id)
+    profile = user  # For simple structure; adjust if you add a separate Profile model
+
+    if request.method == 'POST':
+        remove_pic = request.POST.get('remove_picture')
+        
+        # 1. Remove Profile Picture
+        if remove_pic == "yes":
+            if profile.profile_picture:
+                profile.profile_picture.delete(save=False)  # Delete file from disk
+                profile.profile_picture = None
+                profile.save()
+            messages.success(request, 'Profile picture removed!')
+            return redirect('edit_profile')
+
+        # 2. Update other profile fields
+        username = request.POST.get('username').strip()
+        bio = request.POST.get('bio')
+        profile_picture = request.FILES.get('profile_picture')
+
+        if username != user.username and CustomUser.objects.filter(username=username).exclude(id=user_id).exists():
+            messages.error(request, 'This username is already taken!')
+            return render(request, 'auth/edit_profile.html', {'user': user, 'profile': profile})
+
+        user.username = username
+        user.bio = bio
+        if profile_picture:
+            user.profile_picture = profile_picture
+        user.save()
+        messages.success(request, 'Your profile was updated!')
+        return redirect('profile')
+
+    # For GET request (page load), just show the form
+    return render(request, 'auth/edit_profile.html', {'user': user, 'profile': profile})

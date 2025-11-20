@@ -29,7 +29,7 @@
                 <a href="/" class="nav-link">Home</a>
                 <a href="{% url 'map' %}" class="nav-link">Find Buddies</a>
                 <div class="dropdown nav-link" style="display:inline-block; position:relative;">
-                    <button class="dropbtn">My Matches <i class="fa fa-caret-down"></i></button>
+                    <button class="dropbtn">My Matches </button>
                     <div class="dropdown-content">
                     <a href="{% url 'active_matches' %}">Active Matches</a>
                     <a href="{% url 'match_requests' %}">Match Requests</a>
@@ -38,11 +38,10 @@
                 <a href="{% url 'profile' %}" class="nav-link">Profile</a>
             </div>
             <div class="nav-actions">
-                {% if request.session.user_id %}
+                {% if navbar_username %}
                     <div class="user-menu">
-                        <img src="{% if request.session.profile_picture_url %}{{ request.session.profile_picture_url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" 
-                             alt="Profile" class="avatar">
-                        <span>{{ request.session.username }}</span>
+                        <img src="{% if navbar_profile_pic %}{{ navbar_profile_pic }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" alt="Profile Picture" class="avatar">
+                        <span>{{ navbar_username }}</span>
                         <div class="dropdown">
                             <a href="{% url 'profile' %}">Profile</a>
                             <a href="/settings">Settings</a>
@@ -54,6 +53,7 @@
                     <a href="{% url 'register' %}" class="btn btn-primary">Sign Up</a>
                 {% endif %}
             </div>
+
             <button class="nav-toggle" id="navToggle">
                 <i class="fas fa-bars"></i>
             </button>

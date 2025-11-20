@@ -13,8 +13,7 @@
         <div class="card" style="max-width:500px;margin:auto;">
             <h2 class="card-header">Your Profile</h2>
             <div class="profile-avatar" style="text-align:center;">
-                <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" alt="Profile Picture" class="avatar" style="width:100px;height:100px;">
-            </div>
+                <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" alt="Profile Picture" class="avatar">            </div>
             <div class="profile-details" style="margin-top:18px;">
                 <div class="form-group">
                     <label class="form-label">Username</label>
@@ -26,7 +25,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Bio</label>
-                    <textarea class="form-input" rows="3" disabled>{{ profile.bio }}</textarea>
+                    <textarea class="form-input" rows="3" disabled>{{user.bio}}</textarea>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Photos Taken For Others</label>
@@ -37,7 +36,7 @@
                     <input type="text" value="{{ profile.photos_received }}" class="form-input" disabled>
                 </div>
                 <div style="margin-top:24px;text-align:center;">
-                    <a href="/profile/edit" class="btn btn-secondary btn-lg">Edit Profile</a>
+                    <a href="{% url 'edit_profile' %}" class="btn btn-secondary btn-lg">Edit Profile</a>
                 </div>
             </div>
         </div>
