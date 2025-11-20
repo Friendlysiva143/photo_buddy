@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/settings.css' %}">
+{% endblock %}
+
+{% block title %}Settings & Help | Photo Buddy{% endblock %}
+
+{% block content %}
+<section class="settings-section">
+    <div class="container" style="max-width:800px;margin:auto;">
+        <h2 class="section-title">Settings & Help</h2>
+        <div class="settings-block">
+            <h3>About This Web App</h3>
+            <p>
+                <strong>Photo Buddy</strong> helps you connect with fellow travelers for photography partnerships.  
+                Find photo buddies, share and receive travel photos, manage your account, and get support anytime!
+            </p>
+        </div>
+        <div class="settings-block">
+            <h3>Account Manager</h3>
+            <ul class="settings-list">
+                <li><a href="{% url 'profile' %}">View Profile</a></li>
+                <li><a href="{% url 'edit_profile' %}">Edit Profile</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+                <li><a href="{% url 'profile' %}">Change Password</a></li>
+                <!-- Add password reset/change links here if you implement them -->
+            </ul>
+        </div>
+        <div class="settings-block">
+            <h3>Help Center & Chatbot</h3>
+            <div class="chatbot-box">
+                <p class="chatbot-intro"><i class="fas fa-robot"></i> Need help? Ask the Photo Buddy chatbot below!</p>
+                <form id="chatbot-form" autocomplete="off" style="display:flex;gap:10px;">
+                    <input type="text" name="user_question" placeholder="Type your question..." class="form-input" style="flex:1;">
+                    <button type="button" class="btn btn-primary" onclick="askChatbot()">Ask</button>
+                </form>
+                <div id="chatbot-response" class="chatbot-response"></div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function askChatbot() {
+    var question = document.querySelector('input[name="user_question"]').value;
+    var responseBox = document.getElementById('chatbot-response');
+
+    // Dummy response for demo. Integrate with your actual chatbot/backend later!
+    if (question.trim()) {
+        responseBox.innerHTML = `
+            <b>You asked:</b> ${question}<br>
+            <b>Bot:</b> Sorry, I am a demo chatbot. For real support, contact us or read our FAQ!
+        `;
+    } else {
+        responseBox.innerHTML = "<span style='color:#f43f5e;'>Please enter a question.</span>";
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chat with {{ user_other.username }}{% endblock %}
+
+{% block content %}
+<section class="chat-section">
+    <div class="container" style="max-width: 600px;">
+        <h2>Chat with <b>{{ user_other.username }}</b></h2>
+        <div style="background: #f1f5f9; padding: 1.2rem; border-radius:10px; margin-bottom:1.5rem;">
+            {% for msg in messages %}
+                <div style="margin-bottom:10px; {% if msg.from_user == user_me %}text-align:right;{% endif %}">
+                    <span><b>{{ msg.from_user.username }}:</b></span>
+                    <span>{{ msg.content }}</span>
+                    <span style="font-size:.8em;color:#64748b;">{{ msg.timestamp|date:"H:i, d M" }}</span>
+                </div>
+            {% empty %}
+                <div>No messages yet.</div>
+            {% endfor %}
+        </div>
+        <form method="post" autocomplete="off" style="display:flex;gap:10px;">
+            {% csrf_token %}
+            <input type="text" name="content" placeholder="Type a message..." class="form-input" style="flex:1;">
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

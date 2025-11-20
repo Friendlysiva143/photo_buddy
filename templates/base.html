@@ -35,7 +35,8 @@
                     <a href="{% url 'match_requests' %}">Match Requests</a>
                 </div>
             </div>
-                <a href="{% url 'profile' %}" class="nav-link">Profile</a>
+           <a href="{% url 'demo_chat_list' %}" class="nav-link">Demo Chats</a>
+
             </div>
             <div class="nav-actions">
                 {% if navbar_username %}
@@ -44,7 +45,7 @@
                         <span>{{ navbar_username }}</span>
                         <div class="dropdown">
                             <a href="{% url 'profile' %}">Profile</a>
-                            <a href="/settings">Settings</a>
+                            <a href="{% url 'settings' %}">Settings</a>
                             <a href="{% url 'logout' %}">Logout</a>
                         </div>
                     </div>

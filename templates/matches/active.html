@@ -20,7 +20,8 @@
                         <p>Buddied up on: {{ match.matched_date }}</p>
                         <p>Location: {{ match.location }}</p>
                     </div>
-                    <a href="/chat/{{ match.id }}" class="btn btn-chat">Chat</a>
+                    <a href="{% url 'user_chat' receiver.id %}">Chat</a>
+
                 </div>
             {% endfor %}
         {% else %}

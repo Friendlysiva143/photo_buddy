@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" style="max-width:600px;margin:auto;">
+    <h2 class="section-title">Demo chat with {{ buddy_username }}</h2>
+    <div style="background:#eef2ff; padding:1rem; border-radius:8px;">
+        {% for msg in messages %}
+            {% if msg.sender == 'alice' %}
+                <div style="margin-bottom:0.85rem; text-align:right;">
+                    <span style="background:#2563eb; color:#fff; padding:0.7em 1em; border-radius:14px; display:inline-block;">
+                        {{ msg.message }}<br>
+                        <small style="font-size:11px; color:#64748b;">{{ msg.timestamp }}</small>
+                    </span>
+                </div>
+            {% else %}
+                <div style="margin-bottom:0.85rem; text-align:left;">
+                    <span style="background:#dbeafe; color:#222; padding:0.7em 1em; border-radius:14px; display:inline-block;">
+                        {{ msg.message }}<br>
+                        <small style="font-size:11px; color:#64748b;">{{ msg.timestamp }}</small>
+                    </span>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div style="margin-top:2rem; color:#6b7280;">(Demo only &ndash; no live chat!)</div>
+</div>
+{% endblock %}

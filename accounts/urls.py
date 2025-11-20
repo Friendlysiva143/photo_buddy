@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from .views import edit_profile
+from .views import settings_help
 
 urlpatterns = [
     path('register/', views.register, name='register'),
@@ -8,5 +9,6 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('profile/', views.profile, name='profile'),
     path('profile/edit/', edit_profile, name='edit_profile'),
+    path('settings/', settings_help, name='settings'),
 ]
 

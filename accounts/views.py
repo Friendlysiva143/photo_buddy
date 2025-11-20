@@ -108,3 +108,6 @@ def edit_profile(request):
 
     # For GET request (page load), just show the form
     return render(request, 'auth/edit_profile.html', {'user': user, 'profile': profile})
+
+def settings_help(request):
+    return render(request, 'auth/settings.html')

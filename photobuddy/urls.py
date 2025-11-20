@@ -26,6 +26,8 @@ urlpatterns = [
     path('map/', TemplateView.as_view(template_name='map/nearby-users.html'), name='map'),
     path('accounts/', include('accounts.urls')),
     path('', include('matches.urls')),
+    path('',include('chat.urls')),
+    
 
 ]
 
