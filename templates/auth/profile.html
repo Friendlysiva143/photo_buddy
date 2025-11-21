@@ -5,41 +5,49 @@
 <link rel="stylesheet" href="{% static 'css/auth.css' %}">
 {% endblock %}
 
-{% block title %}Your Profile | Photo Buddy{% endblock %}
+{% block title %}Profile | Photo Buddy{% endblock %}
 
 {% block content %}
 <section class="profile-section">
     <div class="container">
-        <div class="card" style="max-width:500px;margin:auto;">
-            <h2 class="card-header">Your Profile</h2>
-            <div class="profile-avatar" style="text-align:center;">
-                <img src="{% if user.profile_picture %}{{ user.profile_picture.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" alt="Profile Picture" class="avatar">            </div>
-            <div class="profile-details" style="margin-top:18px;">
-                <div class="form-group">
-                    <label class="form-label">Username</label>
-                    <input type="text" value="{{ user.username }}" class="form-input" disabled>
+        <div class="card" style="max-width:410px;margin:auto;">
+            <h2 class="card-header">{{ user.username }}'s Profile</h2>
+            {% if messages %}
+                <div id="popup-message" class="popup-message">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input type="email" value="{{ user.email }}" class="form-input" disabled>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Bio</label>
-                    <textarea class="form-input" rows="3" disabled>{{user.bio}}</textarea>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Photos Taken For Others</label>
-                    <input type="text" value="{{ profile.photos_taken_for_others }}" class="form-input" disabled>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Photos Received</label>
-                    <input type="text" value="{{ profile.photos_received }}" class="form-input" disabled>
-                </div>
-                <div style="margin-top:24px;text-align:center;">
-                    <a href="{% url 'edit_profile' %}" class="btn btn-secondary btn-lg">Edit Profile</a>
-                </div>
+            {% endif %}
+
+            <div class="profile-info" style="text-align:center;">
+                {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" class="avatar" alt="Profile Picture" style="width:120px; border-radius:50%; margin:1em auto 0.5em auto;">
+                {% else %}
+                    <img src="{% static 'images/default-avatar.png' %}" class="avatar" alt="Default Profile" style="width:120px; border-radius:50%; margin:1em auto 0.5em auto;">
+                {% endif %}
+                <p><strong>Username:</strong> {{ user.username }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Bio:</strong> {{ user.bio|default:"No bio yet." }}</p>
+            </div>
+
+            <div style="margin-top:2em; text-align:center;">
+                <a href="{% url 'logout' %}" class="btn btn-outline" style="margin-left:15px;">Logout</a>
             </div>
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+window.onload = function() {
+    var popup = document.getElementById('popup-message');
+    if (popup) {
+        setTimeout(function() {
+            popup.style.display = 'none';
+        }, 3500);
+    }
+}
+</script>
 {% endblock %}

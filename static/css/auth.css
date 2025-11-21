@@ -1,91 +1,157 @@
-.auth-section, .profile-section {
+:root {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --gray-bg: #f3f4f6;
+    --gray-light: #eef2ff;
+    --gray-border: #e5e7eb;
+    --text: #222;
+    --text-light: #64748b;
+}
+
+body {
+    background: var(--gray-bg);
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    color: var(--text);
+}
+
+.auth-section {
     padding: 4rem 0;
 }
 
+.container {
+    max-width: 500px;
+    margin: auto;
+}
+
 .card {
-    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    background: #fff;
     border-radius: 16px;
-    background: white;
-    padding: 2.5rem 2rem;
+    box-shadow: 0 8px 24px rgba(55,65,81,0.1);
+    padding: 2.2rem 2rem;
+    margin: 0 auto;
+    border: none;
+    transition: box-shadow 0.2s;
 }
 
 .card-header {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 700;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.1em;
     text-align: center;
+    letter-spacing: 1.5px;
+    color: var(--primary);
 }
 
-.auth-form .form-group, .profile-details .form-group {
-    margin-bottom: 1.2rem;
+.auth-form .form-group {
+    margin-bottom: 1.1em;
 }
 
 .form-label {
+    display: block;
+    font-size: 1em;
     font-weight: 500;
-    margin-bottom: 0.5rem;
-    display: block;
-    color: #2563eb;
+    margin-bottom: 6px;
+    color: var(--primary);
 }
 
-.form-input, .form-input[disabled], textarea.form-input {
+.form-input,
+input[type="email"],
+input[type="text"],
+input[type="password"],
+input[type="file"],
+textarea {
     width: 100%;
-    padding: 0.65rem 1rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    margin-top: 3px;
+    padding: 0.72em 1em;
+    border-radius: 8px;
+    border: 1.5px solid var(--gray-border);
+    font-size: 1em;
     color: #374151;
-    background: #f3f4f6;
-    transition: border-color 0.3s;
-}
-
-.form-input:focus {
-    border-color: #2563eb;
+    background: var(--gray-bg);
     outline: none;
-    background: #fff;
+    transition: border-color 0.22s, background 0.22s;
+    box-sizing: border-box;
 }
 
-.avatar {
-    border-radius: 50%;
-    margin: auto;
-    display: block;
-    background: #f3f4f6;
+.form-input:focus,
+input[type="email"]:focus,
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: var(--primary);
+    background: var(--gray-light);
+}
+
+.btn {
+    padding: 0.72em 1.35em;
+    border-radius: 8px;
+    font-size: 1em;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    background: var(--primary);
+    color: #fff;
+    transition: background 0.22s, color 0.22s;
+    margin-top: 0.75em;
+    display: inline-block;
+}
+
+.btn.btn-lg {
+    width: 100%;
+    font-size: 1.08em;
+}
+
+.btn-outline {
+    background: #fff;
+    border: 1.4px solid var(--primary);
+    color: var(--primary);
+}
+
+.btn-outline:hover, .btn:hover {
+    background: var(--primary-hover);
+    color: #fff;
+}
+
+.btn.btn-sm {
+    font-size: 0.93em;
+    padding: 0.5em 1em;
+    margin-top: 0;
 }
 
 .form-foot {
-    margin-top: 1.2rem;
+    margin-top: 1.15em;
     text-align: center;
+    font-size: 1em;
+    color: var(--text-light);
 }
 
-/* Pop-up message styles */
 .popup-message {
-    position: fixed;
-    top: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #2563eb;
+    margin-bottom: 1.2em;
+    padding: 0.88em 1.05em;
+    background: var(--primary);
     color: #fff;
-    padding: 16px 28px;
-    border-radius: 12px;
-    font-size: 1.05rem;
-    box-shadow: 0 2px 24px rgba(50, 80, 220, 0.2);
-    z-index: 10000;
-    animation: slide-down 0.6s;
+    border-radius: 10px;
+    font-size: 1.08em;
+    text-align: center;
+    box-shadow: 0 2px 14px rgba(49,88,224,0.12);
+    animation: slide-down 0.5s;
 }
 @keyframes slide-down {
-    from { opacity: 0; top: 0px;}
-    to { opacity: 1; top: 30px;}
-}
-.avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;      /* Circular image */
-    object-fit: cover;       /* Prevents stretching, nicely crops */
-    box-shadow: 0 1px 8px rgba(0,0,0,0.09);
-    display: inline-block;   /* Avoids overlap in flex/grid */
+    from { opacity: 0; margin-top: -32px;}
+    to { opacity: 1; margin-top: 0;}
 }
 
-.profile-avatar {
-    text-align: center;
-    margin-bottom: 18px;
+input[type="file"] {
+    background: none;
+    padding: 0;
+}
+
+@media (max-width: 600px) {
+    .container, .card {
+        padding: 1em;
+    }
+    .auth-section {
+        padding: 1.5em 0;
+    }
+    .card-header {
+        font-size: 1.12rem;
+    }
 }

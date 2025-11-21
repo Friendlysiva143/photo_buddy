@@ -49,6 +49,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'photobuddy.urls'
@@ -73,8 +75,11 @@ TEMPLATES = [
 
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'   # ensure it's path-like if pathlib used
 
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 WSGI_APPLICATION = 'photobuddy.wsgi.application'
 
@@ -85,13 +90,14 @@ WSGI_APPLICATION = 'photobuddy.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'photobuddy_db',           # your database name
+        'NAME': 'Photo_buddy',           # your database name
         'USER': 'root',         # your MySQL username
         'PASSWORD': '1234', # your MySQL password
         'HOST': 'localhost',               # or your DB host
         'PORT': '3306',                    # default MySQL port
     }
 }
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 
 
@@ -128,8 +134,6 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-
-STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
