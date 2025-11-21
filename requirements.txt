@@ -4,10 +4,6 @@ async-timeout==5.0.1
 
 attrs==25.4.0
 
-autobahn==25.10.2
-
-Automat==25.4.16
-
 certifi==2025.11.12
 
 cffi==2.0.0
@@ -58,11 +54,7 @@ googlemaps==4.10.0
 
 gunicorn==23.0.0
 
-hyperlink==21.0.0
-
 idna==3.11
-
-incremental==24.7.2
 
 iniconfig==2.3.0
 
@@ -120,9 +112,6 @@ six==1.17.0
 sqlparse==0.5.3
 
 
-Twisted==25.5.0
-
-txaio==25.9.2
 
 typing_extensions==4.15.0
 
@@ -131,6 +120,4 @@ tzdata==2025.2
 urllib3==2.5.0
 
 whitenoise==6.11.0
-
-zope.interface==8.1.1
 
