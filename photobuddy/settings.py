@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'chat',
 ]
 
-ALLOWED_HOSTS = ['.onrender.com', 'your-custom-domain.com']
+#ALLOWED_HOSTS = ['.onrender.com', 'your-custom-domain.com']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -91,14 +91,15 @@ WSGI_APPLICATION = 'photobuddy.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Photo_buddy',           # your database name
-        'USER': 'root',         # your MySQL username
-        'PASSWORD': '1234', # your MySQL password
-        'HOST': 'localhost',               # or your DB host
-        'PORT': '3306',                    # default MySQL port
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'photo_buddy',      # your database name
+        'USER': 'postgres',         # postgres user
+        'PASSWORD': '1234',# password you set during install
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
+
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 

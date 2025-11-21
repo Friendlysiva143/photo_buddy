@@ -58,9 +58,18 @@
                     <a href="{% url 'register' %}" class="btn btn-primary" style="margin-left:10px;">Sign Up</a>
                 {% endif %}
             </div>
-            <button class="nav-toggle" id="navToggle">
-                <i class="fas fa-bars"></i>
-            </button>
+            <div class="nav-toggle-container" style="position:relative;">
+    <button class="nav-toggle" id="navToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dropdown-menu" id="dropdownMenu">
+        <a href="/">Home</a>
+        <a href="{% url 'map' %}">My Matches</a>
+        <a href="{% url 'demo_chat_list' %}">Chat</a>
+    </div>
+</div>
+
         </div>
     </nav>
 

@@ -157,13 +157,14 @@ body {
 
 /* Mobile menu toggle */
 .nav-toggle {
-    display: none;
-    background: none;
+    background: #333;
+    color: white;
+    padding: 10px 15px;
     border: none;
-    font-size: 1.5rem;
     cursor: pointer;
-    color: var(--text-primary);
+    font-size: 20px;
 }
+
 
 /* Buttons */
 .btn {
@@ -389,4 +390,30 @@ body {
 .dropdown .dropbtn:focus {
     outline: none;
     background-color: #ececec;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 50px; 
+    left: 10px;
+    background: white;
+    width: 150px;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    display: none;
+    flex-direction: column;
+}
+
+.dropdown-menu a {
+    padding: 12px;
+    text-decoration: none;
+    color: black;
+    display: block;
+}
+
+.dropdown-menu a:hover {
+    background: #f1f1f1;
+}
+.dropdown-menu {
+    z-index: 9999 !important;
 }
