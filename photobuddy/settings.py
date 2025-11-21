@@ -44,8 +44,13 @@ INSTALLED_APPS = [
     'chat',
 ]
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'photo-buddy.onrender.com').split(',')
+#ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'photobuddy.onrender.com').split(',')
 
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'photo-buddy.onrender.com',
+]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
