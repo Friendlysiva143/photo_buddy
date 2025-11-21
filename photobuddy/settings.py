@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'chat',
 ]
 
+ALLOWED_HOSTS = ['.onrender.com', 'your-custom-domain.com']
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
