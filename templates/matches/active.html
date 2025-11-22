@@ -11,30 +11,27 @@
 <section class="matches-section">
     <div class="container">
         <h2 class="section-title">🟢 Active Matches</h2>
-        <h2>Your Sent Match Requests</h2>
-        {% if active_matches %}
-                {% for req in active_matches %}
-                    <div class="card mb-3 shadow-sm p-3">
+        <h2>Your Matches</h2>
 
-                        <h5>To: {{ req.receiver.username }}</h5>
-                        <p>Sent: {{ req.created_at|date:"M d, Y H:i" }}</p>
-
-                        <p>
-                            Status:
-                            {% if req.status == "pending" %}
-                                <span class="badge bg-warning">Pending</span>
-                            {% elif req.status == "accepted" %}
-                                <span class="badge bg-success">Accepted</span>
-                            {% else %}
-                                <span class="badge bg-danger">Declined</span>
-                            {% endif %}
-                        </p>
-
-                    </div>
-                {% endfor %}
+        {% for m in matches %}
+            {% if m.user1 == request.user %}
+                {% set other = m.user2 %}
             {% else %}
-                <p>You haven't sent any match requests yet.</p>
+                {% set other = m.user1 %}
             {% endif %}
+
+            <div>
+                <p>{{ other.username }}</p>
+
+                <a href="/chat/room/{{ m.chatroom.id }}/">
+                    <button>Chat</button>
+                </a>
+            </div>
+            <hr>
+        {% empty %}
+            <p>No matches yet.</p>
+        {% endfor %}
+
 
     </div>
 </section>

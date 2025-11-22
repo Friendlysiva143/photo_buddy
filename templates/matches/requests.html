@@ -10,22 +10,34 @@
 {% block content %}
 <section class="matches-section">
     <div class="container">
-        <h2 class="section-title">📨 Match Requests</h2>
-        <h2>Incoming Match Requests</h2>
-        {% if match_requests %}
-            {% for req in match_requests %}
-                <div>
-                    <p><strong>{{ req.sender.username }}</strong> wants to match with you</p>
+        <h2>Match Requests</h2>
 
-                    <a href="{% url 'accept_match' req.id %}">✔ Accept</a>
-                    <a href="{% url 'decline_match' req.id %}" style="color:red;">✖ Decline</a>
+            <h3>Received Requests</h3>
+            {% for r in received %}
+                <div>
+                    <p>{{ r.sender.username }} sent you a request</p>
+
+                    <a href="{% url 'accept_request' r.id %}">
+                        <button>Accept</button>
+                    </a>
+
+                    <a href="{% url 'decline_request' r.id %}">
+                        <button>Decline</button>
+                    </a>
                 </div>
                 <hr>
+            {% empty %}
+                <p>No incoming requests.</p>
             {% endfor %}
-        {% else %}
-            <p>No new match requests.</p>
-        {% endif %}
 
+            <h3>Sent Requests</h3>
+            {% for r in sent %}
+                <div>
+                    <p>You sent request to {{ r.receiver.username }} - Status: {{ r.status }}</p>
+                </div>
+            {% empty %}
+                <p>No sent requests.</p>
+            {% endfor %}
     </div>
 </section>
 {% endblock %}
