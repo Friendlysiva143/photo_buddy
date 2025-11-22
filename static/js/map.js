@@ -29,19 +29,60 @@ document.addEventListener("DOMContentLoaded", function () {
     const csrftoken = getCookie('csrftoken');
 
     // Send match request function
-    function sendMatchRequest(username) {
-        fetch('/matches/request/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRFToken': csrftoken
-            },
-            body: `username=${username}`
-        })
-        .then(res => res.json())
-        .then(data => alert(`Request status: ${data.status}`))
-        .catch(err => console.error(err));
+    function sendMatchRequest(username, btnElement = null) {
+    // If button passed → disable it immediately
+    if (btnElement) {
+        btnElement.disabled = true;
+        btnElement.innerText = "Sending...";
     }
+
+    fetch('/matches/request/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrftoken
+        },
+        body: `username=${encodeURIComponent(username)}`
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "success") {
+            alert("✅ Match request sent to " + username);
+
+            if (btnElement) {
+                btnElement.innerText = "Sent ✔";
+                btnElement.classList.remove("btn-primary");
+                btnElement.classList.add("btn-success");
+            }
+
+        } else if (data.status === "exists") {
+            alert("⚠ Request already sent to " + username);
+
+            if (btnElement) {
+                btnElement.innerText = "Already Sent";
+            }
+
+        } else {
+            alert("❌ " + data.message);
+
+            if (btnElement) {
+                btnElement.disabled = false;
+                btnElement.innerText = "Request";
+            }
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("❌ Something went wrong.");
+
+        if (btnElement) {
+            btnElement.disabled = false;
+            btnElement.innerText = "Request";
+        }
+    });
+    }
+
+
 
     // Try to get user's geolocation
     if (navigator.geolocation) {

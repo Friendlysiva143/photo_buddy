@@ -11,29 +11,21 @@
 <section class="matches-section">
     <div class="container">
         <h2 class="section-title">📨 Match Requests</h2>
+        <h2>Incoming Match Requests</h2>
         {% if match_requests %}
             {% for req in match_requests %}
-                <div class="match-card">
-                    <img src="{{ req.user.profile_picture.url|default_if_none:'/static/images/default-avatar.png' }}" class="avatar">
-                    <div>
-                        <h3>{{ req.user.username }}</h3>
-                        <p>Requested on: {{ req.request_date }}</p>
-                        <p>Location: {{ req.location }}</p>
-                    </div>
-                    <form method="POST" action="{% url 'accept_match' req.id %}" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-success">Accept</button>
-                    </form>
+                <div>
+                    <p><strong>{{ req.sender.username }}</strong> wants to match with you</p>
 
-                    <form method="POST" action="{% url 'decline_match' req.id %}" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Decline</button>
-                    </form>
+                    <a href="{% url 'accept_match' req.id %}">✔ Accept</a>
+                    <a href="{% url 'decline_match' req.id %}" style="color:red;">✖ Decline</a>
                 </div>
+                <hr>
             {% endfor %}
         {% else %}
-            <p class="empty-msg">No match requests yet.</p>
+            <p>No new match requests.</p>
         {% endif %}
+
     </div>
 </section>
 {% endblock %}
