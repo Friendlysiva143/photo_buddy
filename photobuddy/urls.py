@@ -38,6 +38,7 @@ urlpatterns = [
     # Chat app (prefix added)
     path('chat/', include('chat.urls')),
     path("demo-chat/", TemplateView.as_view(template_name="chat/demo_chat.html"), name="demo_chat"),
+    path('locations/', include('locations.urls')),
 
 ]
 
