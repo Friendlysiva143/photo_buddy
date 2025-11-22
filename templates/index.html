@@ -20,7 +20,7 @@
                     No more awkward stranger requests or missing memories!
                 </p>
                 <div class="hero-actions">
-                    {% if request.session.user_id %}
+                    {% if request.user.is_authenticated %}
                         <a href="{% url 'map' %}" class="btn btn-primary btn-lg">
                             <i class="fas fa-rocket"></i> Find Buddies
                         </a>
@@ -161,7 +161,7 @@
         <div class="cta-content">
             <h2>Ready to Capture Better Memories?</h2>
             <p>Join thousands of travelers who never miss a perfect shot</p>
-            {% if request.session.user_id %}
+            {% if request.user.is_authenticated %}
                 <a href="{% url 'map' %}" class="btn btn-primary btn-lg">
                 <i class="fas fa-rocket"></i> Find Buddies
                 </a>
