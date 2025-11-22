@@ -108,6 +108,19 @@ DATABASES = {
     )
 }
 
+# Local PostgreSQL configuration
+"""DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "photo_buddy",
+        "USER": "postgres",
+        "PASSWORD": "1234",
+        "HOST": "localhost",
+        "PORT": "5432",
+    }
+}"""
+
+
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 

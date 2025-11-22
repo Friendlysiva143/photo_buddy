@@ -28,6 +28,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     const csrftoken = getCookie('csrftoken');
 
+    // Send match request function
+    function sendMatchRequest(username) {
+        fetch('/matches/request/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrftoken
+            },
+            body: `username=${username}`
+        })
+        .then(res => res.json())
+        .then(data => alert(`Request status: ${data.status}`))
+        .catch(err => console.error(err));
+    }
+
     // Try to get user's geolocation
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
@@ -57,26 +72,25 @@ document.addEventListener("DOMContentLoaded", function () {
             fetch('/locations/nearby-users-json/')
                 .then(res => res.json())
                 .then(users => {
-                    // Clear existing nearby users list
                     let userListEl = document.getElementById('nearby-users');
                     userListEl.innerHTML = '';
 
                     users.forEach(u => {
-                        // Add markers for each user
-                        L.marker([u.lat, u.lng])
+                        // Add marker for each user
+                        const marker = L.marker([u.lat, u.lng])
                             .addTo(map)
                             .bindPopup(
                                 `<strong>${u.username}</strong><br>
-                                 <a href='/matches/request?user=${u.username}' class='btn btn-sm btn-primary'>Send Match Request</a>`
+                                 <button class='btn btn-sm btn-primary' onclick="sendMatchRequest('${u.username}')">Send Match Request</button>`
                             );
 
                         // Add list view entry
-                        let li = document.createElement('li');
+                        const li = document.createElement('li');
                         li.innerHTML = `
                             <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;">
                                 <span><i class="fas fa-user"></i> <strong>${u.username}</strong></span>
                                 <span>
-                                    <a href='/matches/request?user=${u.username}' class='btn btn-primary btn-sm' style='margin-left:8px;'>Request</a>
+                                    <button class='btn btn-primary btn-sm' onclick="sendMatchRequest('${u.username}')">Request</button>
                                 </span>
                             </div>
                         `;
