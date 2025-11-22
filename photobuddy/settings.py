@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'chat',
+    'locations',
+    'matches',
 ]
 
 #ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'photobuddy.onrender.com').split(',')
