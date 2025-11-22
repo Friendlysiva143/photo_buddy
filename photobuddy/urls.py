@@ -22,12 +22,22 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # Home Page
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
+
+    # Map Page
     path('map/', TemplateView.as_view(template_name='map/nearby-users.html'), name='map'),
+
+    # Accounts app
     path('accounts/', include('accounts.urls')),
-    path('', include('matches.urls')),
-    path('',include('chat.urls')),
-    
+
+    # Matches app (prefix added)
+    path('matches/', include('matches.urls')),
+
+    # Chat app (prefix added)
+    path('chat/', include('chat.urls')),
+    path("demo-chat/", TemplateView.as_view(template_name="chat/demo_chat.html"), name="demo_chat"),
 
 ]
 
