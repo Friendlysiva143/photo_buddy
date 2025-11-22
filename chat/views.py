@@ -3,7 +3,8 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
-from .models import ChatRoom, Message
+from .models import Message
+from chat.models import ChatRoom  #  your model is
 
 
 @login_required
@@ -48,3 +49,8 @@ def send_message(request, room_id):
     )
 
     return JsonResponse({"status": "sent"})
+
+
+def chat_list(request):
+    rooms = ChatRoom.objects.filter(user1=request.user) | ChatRoom.objects.filter(user2=request.user)
+    return render(request, 'chat/chat_list.html', {'rooms': rooms})
