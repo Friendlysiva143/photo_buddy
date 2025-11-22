@@ -30,3 +30,8 @@ def decline_match(request, id):
         return redirect('home')   # 👈 go to home page
 
     return redirect('home')
+
+def match_requests(request):
+    # For demo only
+    demo_request = {'id': 1, 'buddy_username': 'Alice'}
+    return render(request, 'matches/requests.html', {'match_requests': [demo_request]})

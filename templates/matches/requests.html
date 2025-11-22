@@ -20,11 +20,12 @@
                         <p>Requested on: {{ req.request_date }}</p>
                         <p>Location: {{ req.location }}</p>
                     </div>
-                    <form method="POST" action="/matches/{{ req.id }}/accept/" style="display:inline;">
+                    <form method="POST" action="{% url 'accept_match' req.id %}" style="display:inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-success">Accept</button>
                     </form>
-                    <form method="POST" action="/matches/{{ req.id }}/decline/" style="display:inline;">
+
+                    <form method="POST" action="{% url 'decline_match' req.id %}" style="display:inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger">Decline</button>
                     </form>
