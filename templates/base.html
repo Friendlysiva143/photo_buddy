@@ -1,122 +1,137 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Photo Buddy{% endblock %}</title>
+    <title>{% block title %}Photo Buddy - Find Travel Photo Partners{% endblock %}</title>
+
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% block extra_css %}{% endblock %}
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
-<nav class="navbar">
-    <div class="container">
-        <!-- Brand -->
-        <a href="{% url 'home' %}" class="nav-brand">
-            <i class="fas fa-camera"></i>
-            <span>Photo Buddy</span>
-        </a>
-
-        <!-- Desktop Menu -->
-        <div class="nav-menu" id="navMenu">
-            <a href="{% url 'home' %}" class="nav-link">Home</a>
-            <a href="{% url 'map' %}" class="nav-link">Find Buddies</a>
-
-            <div class="dropdown">
-                <button class="dropbtn">My Matches <i class="fas fa-caret-down"></i></button>
-                <div class="dropdown-content">
-                    <a href="{% url 'active_matches' %}">Active Matches</a>
-                    <a href="{% url 'match_requests' %}">Match Requests</a>
-                </div>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="{% url 'home' %}" class="nav-brand">
+                    <i class="fas fa-camera"></i>
+                    <span>Photo Buddy</span>
+                </a>
             </div>
 
-            <a href="{% url 'chat_list' %}" class="nav-link">Chats</a>
-        </div>
+            <!-- Desktop Menu -->
+            <div class="nav-menu" id="navMenu">
+                <a href="{% url 'home' %}" class="nav-link">Home</a>
+                <a href="{% url 'map' %}" class="nav-link">Find Buddies</a>
 
-        <!-- User Actions -->
-        <div class="nav-actions">
-            {% if request.user.is_authenticated %}
-                <div class="user-menu">
-                    <img src="{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" 
-                         alt="Profile" class="avatar">
-                    <span>{{ request.user.username }}</span>
-                    <div class="dropdown">
-                        <button class="dropbtn"><i class="fas fa-caret-down"></i></button>
-                        <div class="dropdown-content">
-                            <a href="{% url 'profile' %}">Profile</a>
-                            <a href="{% url 'logout' %}">Logout</a>
-                        </div>
+                <div class="dropdown nav-link">
+                    <button class="dropbtn">My Matches</button>
+                    <div class="dropdown-content">
+                        <a href="{% url 'active_matches' %}">Active Matches</a>
+                        <a href="{% url 'match_requests' %}">Match Requests</a>
                     </div>
                 </div>
-            {% else %}
-                <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
-                <a href="{% url 'register' %}" class="btn btn-primary">Sign Up</a>
-            {% endif %}
-        </div>
 
-        <!-- Mobile Menu Toggle -->
-        <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
-        <div class="dropdown-menu" id="dropdownMenu">
-            <a href="{% url 'home' %}">Home</a>
-            <a href="{% url 'map' %}">Find Buddies</a>
-            <a href="{% url 'active_matches' %}">Active Matches</a>
-            <a href="{% url 'match_requests' %}">Match Requests</a>
-            <a href="{% url 'chat_list' %}">Chats</a>
-            {% if request.user.is_authenticated %}
-                <a href="{% url 'profile' %}">Profile</a>
-                <a href="{% url 'logout' %}">Logout</a>
-            {% else %}
-                <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'register' %}">Sign Up</a>
-            {% endif %}
-        </div>
-    </div>
-</nav>
+                <a href="{% url 'chat_list' %}" class="nav-link">Chats</a>
+            </div>
 
-<main class="main-content">{% block content %}{% endblock %}</main>
+            <!-- Auth Actions -->
+            <div class="nav-actions">
+                {% if request.user.is_authenticated %}
+                    <div class="user-menu" style="display:flex;align-items:center;gap:10px;">
+                        <img src="{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}"
+                             alt="Profile Picture" class="avatar">
+                        <span>{{ request.user.username }}</span>
+                        <div class="dropdown">
+                            <button class="dropbtn" style="border:none; background:none; cursor:pointer;">
+                                <i class="fas fa-caret-down"></i>
+                            </button>
+                            <div class="dropdown-content">
+                                <a href="{% url 'profile' %}">Profile</a>
+                                <a href="{% url 'logout' %}">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+                    <a href="{% url 'register' %}" class="btn btn-primary" style="margin-left:10px;">Sign Up</a>
+                {% endif %}
+            </div>
 
-<footer class="footer">
-    <div class="container">
-        <div class="footer-content" style="display:flex;flex-wrap:wrap;gap:20px;">
-            <div class="footer-section">
-                <h3>Photo Buddy</h3>
-                <p>Connect with fellow travelers for mutual photo assistance</p>
-            </div>
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <a href="/about">About</a>
-                <a href="/how-it-works">How It Works</a>
-                <a href="/safety">Safety Tips</a>
-            </div>
-            <div class="footer-section">
-                <h4>Legal</h4>
-                <a href="/terms">Terms of Service</a>
-                <a href="/privacy">Privacy Policy</a>
-            </div>
-            <div class="footer-section">
-                <h4>Connect</h4>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
+            <!-- Mobile Menu Toggle -->
+            <div class="nav-toggle-container">
+                <button class="nav-toggle" id="navToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="{% url 'home' %}">Home</a>
+                    <a href="{% url 'map' %}">Find Buddies</a>
+                    <a href="{% url 'active_matches' %}">Active Matches</a>
+                    <a href="{% url 'match_requests' %}">Match Requests</a>
+                    <a href="{% url 'chat_list' %}">Chats</a>
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'profile' %}">Profile</a>
+                        <a href="{% url 'logout' %}">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}">Login</a>
+                        <a href="{% url 'register' %}">Sign Up</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
-        <div class="footer-bottom">
-            &copy; 2025 Photo Buddy. All rights reserved.
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content" style="display:flex;flex-wrap:wrap;justify-content:space-between;">
+                <div class="footer-section">
+                    <h3>Photo Buddy</h3>
+                    <p>Connect with fellow travelers for mutual photo assistance</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="/about">About</a>
+                    <a href="/how-it-works">How It Works</a>
+                    <a href="/safety">Safety Tips</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <a href="/terms">Terms of Service</a>
+                    <a href="/privacy">Privacy Policy</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom" style="text-align:center; margin-top: 10px;">
+                <p>&copy; 2025 Photo Buddy. All rights reserved.</p>
+            </div>
         </div>
-    </div>
-</footer>
+    </footer>
 
-<script>
-    // Mobile menu toggle
-    const navToggle = document.getElementById('navToggle');
-    const navMenu = document.getElementById('dropdownMenu');
-
-    navToggle.addEventListener('click', () => {
-        navMenu.style.display = navMenu.style.display === 'flex' ? 'none' : 'flex';
-    });
-</script>
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
