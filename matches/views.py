@@ -11,16 +11,29 @@ from chat.models import ChatRoom
 # SEND REQUEST
 # -----------------------------
 @login_required
-def send_request(request, user_id):
-    receiver = get_object_or_404(User, id=user_id)
+def send_request(request):
+    if request.method == "POST" and request.user.is_authenticated:
+        username = request.POST.get('username')
+        if not username:
+            return JsonResponse({'status': 'error', 'message': 'No username provided'}, status=400)
 
-    # Prevent duplicate requests
-    if MatchRequest.objects.filter(sender=request.user, receiver=receiver, status="pending").exists():
-        return JsonResponse({'status': 'already_sent'})
+        try:
+            target_user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return JsonResponse({'status': 'user_not_found', 'message': 'User not found'}, status=404)
 
-    MatchRequest.objects.create(sender=request.user, receiver=receiver)
-    return JsonResponse({'status': 'sent'})
-    
+        # Prevent sending request to self
+        if target_user == request.user:
+            return JsonResponse({'status': 'error', 'message': "Can't send request to yourself"}, status=400)
+
+        # Check if request already exists
+        if MatchRequest.objects.filter(sender=request.user, receiver=target_user).exists():
+            return JsonResponse({'status': 'already_sent', 'message': 'Request already sent'}, status=400)
+
+        MatchRequest.objects.create(sender=request.user, receiver=target_user)
+        return JsonResponse({'status': 'sent', 'message': 'Request sent successfully'})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
 # -----------------------------
 # SHOW REQUESTS (sent + received)
