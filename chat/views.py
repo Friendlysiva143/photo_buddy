@@ -52,5 +52,14 @@ def send_message(request, room_id):
 
 
 def chat_list(request):
-    rooms = ChatRoom.objects.filter(user1=request.user) | ChatRoom.objects.filter(user2=request.user)
-    return render(request, 'chat/chat_list.html', {'rooms': rooms})
+    rooms = ChatRoom.objects.filter(
+        user1=request.user
+    ) | ChatRoom.objects.filter(user2=request.user)
+
+    # Prepare list with "other_user" for each room
+    rooms_with_other = []
+    for room in rooms:
+        other_user = room.user2 if room.user1 == request.user else room.user1
+        rooms_with_other.append({'room': room, 'other_user': other_user})
+
+    return render(request, 'chat/chat_list.html', {'rooms': rooms_with_other})

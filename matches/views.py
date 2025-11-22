@@ -78,8 +78,21 @@ def decline_request(request, req_id):
 # -----------------------------
 @login_required
 def active_matches(request):
-    matches = Match.objects.filter(user1=request.user) | Match.objects.filter(user2=request.user)
+    # Get all accepted matches for the current user
+    matches = MatchRequest.objects.filter(
+        status='accepted'
+    ).filter(
+        sender=request.user
+    ) | MatchRequest.objects.filter(
+        status='accepted'
+    ).filter(
+        receiver=request.user
+    )
 
-    return render(request, "matches/active.html", {
-        "matches": matches
-    })
+    # Prepare list of matches with 'other_user' for template
+    matches_with_other = []
+    for match in matches:
+        other_user = match.receiver if match.sender == request.user else match.sender
+        matches_with_other.append({'match': match, 'other_user': other_user})
+
+    return render(request, 'matches/active.html', {'matches': matches_with_other})

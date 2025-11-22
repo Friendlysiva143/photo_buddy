@@ -6,17 +6,15 @@
 {% block content %}
 <div class="container" style="padding: 20px;">
     <h2>My Chat Rooms</h2>
-    
+
     {% if rooms %}
         <ul class="chat-room-list" style="list-style: none; padding: 0;">
-            {% for room in rooms %}
-                {% with other_user=room.user2 if room.user1 == request.user else room.user1 %}
-                    <li style="margin-bottom: 10px;">
-                        <a href="{% url 'chat_room' room.id %}" style="text-decoration:none; color:#333; display:block; padding:10px; border:1px solid #ccc; border-radius:5px;">
-                            <strong>{{ other_user.username }}</strong>
-                        </a>
-                    </li>
-                {% endwith %}
+            {% for item in rooms %}
+                <li style="margin-bottom: 10px;">
+                    <a href="{% url 'chat_room' item.room.id %}" style="text-decoration:none; color:#333; display:block; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                        <strong>{{ item.other_user.username }}</strong>
+                    </a>
+                </li>
             {% endfor %}
         </ul>
     {% else %}
