@@ -14,7 +14,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     {% block extra_css %}{% endblock %}
-    <!-- Leaflet for Maps (if needed) -->
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
@@ -26,27 +26,32 @@
                     <i class="fas fa-camera"></i>
                     <span>Photo Buddy</span>
                 </a>
-
             </div>
+
+            <!-- Desktop Menu -->
             <div class="nav-menu" id="navMenu">
-                <a href="/" class="nav-link">Home</a>
+                <a href="{% url 'home' %}" class="nav-link">Home</a>
                 <a href="{% url 'map' %}" class="nav-link">Find Buddies</a>
-                <div class="dropdown nav-link" style="display:inline-block; position:relative;">
+
+                <div class="dropdown nav-link">
                     <button class="dropbtn">My Matches</button>
                     <div class="dropdown-content">
                         <a href="{% url 'active_matches' %}">Active Matches</a>
                         <a href="{% url 'match_requests' %}">Match Requests</a>
                     </div>
                 </div>
-                <a href="{% url 'demo_chat_list' %}" class="nav-link">Demo Chats</a>
+
+                <a href="{% url 'chat_list' %}" class="nav-link">Chats</a>
             </div>
+
+            <!-- Auth Actions -->
             <div class="nav-actions">
                 {% if request.user.is_authenticated %}
                     <div class="user-menu" style="display:flex;align-items:center;gap:10px;">
                         <img src="{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}"
                              alt="Profile Picture" class="avatar">
                         <span>{{ request.user.username }}</span>
-                        <div class="dropdown" style="display:inline-block; position:relative;">
+                        <div class="dropdown">
                             <button class="dropbtn" style="border:none; background:none; cursor:pointer;">
                                 <i class="fas fa-caret-down"></i>
                             </button>
@@ -61,18 +66,27 @@
                     <a href="{% url 'register' %}" class="btn btn-primary" style="margin-left:10px;">Sign Up</a>
                 {% endif %}
             </div>
-            <div class="nav-toggle-container" style="position:relative;">
-    <button class="nav-toggle" id="navToggle">
-        <i class="fas fa-bars"></i>
-    </button>
 
-    <div class="dropdown-menu" id="dropdownMenu">
-        <a href="/">Home</a>
-        <a href="{% url 'map' %}">My Matches</a>
-        <a href="{% url 'demo_chat_list' %}">Chat</a>
-    </div>
-</div>
-
+            <!-- Mobile Menu Toggle -->
+            <div class="nav-toggle-container">
+                <button class="nav-toggle" id="navToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="{% url 'home' %}">Home</a>
+                    <a href="{% url 'map' %}">Find Buddies</a>
+                    <a href="{% url 'active_matches' %}">Active Matches</a>
+                    <a href="{% url 'match_requests' %}">Match Requests</a>
+                    <a href="{% url 'chat_list' %}">Chats</a>
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'profile' %}">Profile</a>
+                        <a href="{% url 'logout' %}">Logout</a>
+                    {% else %}
+                        <a href="{% url 'login' %}">Login</a>
+                        <a href="{% url 'register' %}">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -115,7 +129,7 @@
         </div>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="{% static 'js/main.js' %}"></script>
     {% block extra_js %}{% endblock %}
