@@ -14,18 +14,20 @@
         <h2>Your Matches</h2>
 
         {% for match in matches %}
-            {% if match.user1 == request.user %}
-                {% with other_user=match.user2 %}
-            {% else %}
-                {% with other_user=match.user1 %}
-            {% endif %}
+                {% if match.user1 == request.user %}
+                    {% with other_user=match.user2 %}
+                {% else %}
+                    {% with other_user=match.user1 %}
+                {% endif %}
 
-            <div>
-                <a href="{% url 'chat_room' match.id %}">{{ other_user.username }}</a>
-            </div>
+                <div>
+                    <a href="{% url 'chat_room' match.id %}">{{ other_user.username }}</a>
+                </div>
 
-            {% endwith %}
-        {% endfor %}
+                {% endwith %}
+            {% endfor %}
+        {% empty %}
+            <p>No matches yet.</p>
 
 
     </div>

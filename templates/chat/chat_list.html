@@ -10,22 +10,19 @@
     {% if rooms %}
         <ul class="chat-room-list" style="list-style: none; padding: 0;">
             {% for room in rooms %}
+                {% if room.user1 == request.user %}
+                    {% with other_user=room.user2 %}
+                {% else %}
+                    {% with other_user=room.user1 %}
+                {% endif %}
+                
                 <li style="margin-bottom: 10px;">
-                    {% if match.user1 == request.user %}
-                        {% with other_user=match.user2 %}
-                            {{ other_user.username }}
-                        {% endwith %}
-                    {% else %}
-                        {% with other_user=match.user1 %}
-                            {{ other_user.username }}
-                        {% endwith %}
-                    {% endif %}
-
                     <a href="{% url 'chat_room' room.id %}" style="text-decoration:none; color:#333; display:block; padding:10px; border:1px solid #ccc; border-radius:5px;">
                         <strong>{{ other_user.username }}</strong>
                     </a>
-                    {% endwith %}
                 </li>
+                
+                {% endwith %}
             {% endfor %}
         </ul>
     {% else %}
