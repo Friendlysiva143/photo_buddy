@@ -13,22 +13,19 @@
         <h2 class="section-title">🟢 Active Matches</h2>
         <h2>Your Matches</h2>
 
-        {% for match in matches %}
-                {% if match.user1 == request.user %}
-                    {% with other_user=match.user2 %}
-                {% else %}
-                    {% with other_user=match.user1 %}
-                {% endif %}
-
-                <div>
-                    <a href="{% url 'chat_room' match.id %}">{{ other_user.username }}</a>
-                </div>
-
+        {% if matches %}
+            {% for match in matches %}
+                {% with other_user=match.user2 if match.user1 == request.user else match.user1 %}
+                    <div class="match-card" style="margin-bottom:10px;">
+                        <a href="{% url 'chat_room' match.id %}" style="text-decoration:none; color:#333;">
+                            <strong>{{ other_user.username }}</strong>
+                        </a>
+                    </div>
                 {% endwith %}
             {% endfor %}
-        {% empty %}
+        {% else %}
             <p>No matches yet.</p>
-
+        {% endif %}
 
     </div>
 </section>
