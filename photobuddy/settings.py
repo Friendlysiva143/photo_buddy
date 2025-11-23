@@ -108,6 +108,11 @@ DATABASES = {
     )
 }
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://photo-buddy.onrender.com",
+    "http://localhost:8000",
+]
+
 # Local PostgreSQL configuration
 """DATABASES = {
     "default": {

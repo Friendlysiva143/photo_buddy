@@ -34,12 +34,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         fetch('/matches/send-request/', {
             method: 'POST',
+            credentials: "same-origin",
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'X-CSRFToken': csrftoken
             },
             body: `username=${encodeURIComponent(username)}`
         })
+
         .then(res => {
             return res.json().then(data => {
                 // Even on bad status, get JSON body/message
