@@ -48,18 +48,11 @@
             <div class="nav-actions">
                 {% if request.user.is_authenticated %}
                     <div class="user-menu" style="display:flex;align-items:center;gap:10px;">
+                        <a href="{% url 'profile' %}">
                         <img src="{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}"
-                             alt="Profile Picture" class="avatar">
+                            alt="Profile Picture" class="avatar">
                         <span>{{ request.user.username }}</span>
-                        <div class="dropdown">
-                            <button class="dropbtn" style="border:none; background:none; cursor:pointer;">
-                                <i class="fas fa-caret-down"></i>
-                            </button>
-                            <div class="dropdown-content">
-                                <a href="{% url 'profile' %}">Profile</a>
-                                <a href="{% url 'logout' %}">Logout</a>
-                            </div>
-                        </div>
+                         </a>
                     </div>
                 {% else %}
                     <a href="{% url 'login' %}" class="btn btn-outline">Login</a>

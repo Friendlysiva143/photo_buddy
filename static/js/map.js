@@ -1,5 +1,3 @@
-// static/js/map.js
-
 document.addEventListener("DOMContentLoaded", function () {
     // Set default map center (Hyderabad)
     const defaultLat = 17.385;
@@ -27,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     const csrftoken = getCookie('csrftoken');
 
-    // Global function to send match request
+    // Global function to send match request (IMPROVED)
     window.sendMatchRequest = function(username, btnElement = null) {
         if (btnElement) {
             btnElement.disabled = true;
@@ -42,8 +40,15 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             body: `username=${encodeURIComponent(username)}`
         })
-        .then(res => res.json())
-        .then(data => {
+        .then(res => {
+            return res.json().then(data => {
+                // Even on bad status, get JSON body/message
+                return { ok: res.ok, status: res.status, data: data };
+            });
+        })
+        .then(resp => {
+            let data = resp.data;
+            // Handle all cases using backend status
             if (data.status === 'sent') {
                 alert(`✅ Match request sent to ${username}`);
                 if (btnElement) {
@@ -57,8 +62,14 @@ document.addEventListener("DOMContentLoaded", function () {
             } else if (data.status === 'user_not_found') {
                 alert(`❌ User not found: ${username}`);
                 if (btnElement) btnElement.disabled = false;
+            } else if (data.status === 'error') {
+                alert(`❌ ${data.message || "Something went wrong."}`);
+                if (btnElement) {
+                    btnElement.disabled = false;
+                    btnElement.innerText = "Request";
+                }
             } else {
-                alert(`❌ Something went wrong.`);
+                alert(`❌ Unknown response from server.`);
                 if (btnElement) {
                     btnElement.disabled = false;
                     btnElement.innerText = "Request";
@@ -66,14 +77,15 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         })
         .catch(err => {
-            console.error(err);
-            alert("❌ Something went wrong.");
+            // Any unexpected network/parsing error
+            console.error("Match request failed:", err);
+            alert("❌ Something went wrong. Please try again.");
             if (btnElement) {
                 btnElement.disabled = false;
                 btnElement.innerText = "Request";
             }
         });
-    }
+    };
 
     // Detect user's location
     function initMap(userLat = defaultLat, userLng = defaultLng) {
