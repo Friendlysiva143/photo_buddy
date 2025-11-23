@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.contrib.auth.models import User
 
 from .models import MatchRequest, Match
 from chat.models import ChatRoom
-
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 # -----------------------------
 # SEND REQUEST
