@@ -19,7 +19,7 @@ from django.urls import path,include
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static 
-from .views import about,safety,terms,privacy,home
+from .views import about,safety,terms,privacy,home,settings_page
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -45,6 +45,7 @@ urlpatterns = [
     path('chat/', include('chat.urls')),
     path("demo-chat/", TemplateView.as_view(template_name="chat/demo_chat.html"), name="demo_chat"),
     path('locations/', include('locations.urls')),
+    path('settings/', settings_page, name='settings'),
 
 ]
 

@@ -5,59 +5,87 @@
 <link rel="stylesheet" href="{% static 'css/settings.css' %}">
 {% endblock %}
 
-{% block title %}Settings & Help | Photo Buddy{% endblock %}
+{% block title %}Settings{% endblock %}
 
 {% block content %}
-<section class="settings-section">
-    <div class="container" style="max-width:800px;margin:auto;">
-        <h2 class="section-title">Settings & Help</h2>
-        <div class="settings-block">
-            <h3>About This Web App</h3>
-            <p>
-                <strong>Photo Buddy</strong> helps you connect with fellow travelers for photography partnerships.  
-                Find photo buddies, share and receive travel photos, manage your account, and get support anytime!
-            </p>
-        </div>
-        <div class="settings-block">
-            <h3>Account Manager</h3>
-            <ul class="settings-list">
-                <li><a href="{% url 'profile' %}">View Profile</a></li>
-                <li><a href="{% url 'edit_profile' %}">Edit Profile</a></li>
-                <li><a href="{% url 'logout' %}">Logout</a></li>
-                <li><a href="{% url 'profile' %}">Change Password</a></li>
-                <!-- Add password reset/change links here if you implement them -->
-            </ul>
-        </div>
-        <div class="settings-block">
-            <h3>Help Center & Chatbot</h3>
-            <div class="chatbot-box">
-                <p class="chatbot-intro"><i class="fas fa-robot"></i> Need help? Ask the Photo Buddy chatbot below!</p>
-                <form id="chatbot-form" autocomplete="off" style="display:flex;gap:10px;">
-                    <input type="text" name="user_question" placeholder="Type your question..." class="form-input" style="flex:1;">
-                    <button type="button" class="btn btn-primary" onclick="askChatbot()">Ask</button>
-                </form>
-                <div id="chatbot-response" class="chatbot-response"></div>
-            </div>
-        </div>
+<div class="settings-container">
+    <h2>Account Settings</h2>
+    <div class="settings-actions">
+        <button id="showEditProfile" class="btn btn-info settings-toggle">Edit Profile</button>
+        <button id="showChangePassword" class="btn btn-info settings-toggle">Change Password</button>
+        <button id="showComplaint" class="btn btn-info settings-toggle">Complaint/Message</button>
+        <button id="showDeleteAccount" class="btn btn-danger settings-toggle">Delete Account</button>
     </div>
-</section>
+
+    <hr>
+
+    <div id="editProfileForm" class="settings-form" style="display:none;">
+        <h4>Edit Profile</h4>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ profile_form.as_p }}
+            <button type="submit" name="edit_profile" class="btn btn-info">Update Profile</button>
+        </form>
+    </div>
+
+    <div id="changePasswordForm" class="settings-form" style="display:none;">
+        <h4>Change Password</h4>
+        <form method="post">
+            {% csrf_token %}
+            {{ password_form.as_p }}
+            <button type="submit" name="change_password" class="btn btn-info">Change Password</button>
+        </form>
+    </div>
+
+    <div id="complaintForm" class="settings-form" style="display:none;">
+        <h4>Send Complaint/Message</h4>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="subject">Subject:</label>
+                <input id="subject" name="subject" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" rows="4" class="form-control"></textarea>
+            </div>
+            <button type="submit" name="send_message" class="btn btn-info">Send Message</button>
+        </form>
+    </div>
+
+    <div id="deleteAccountForm" class="settings-form" style="display:none;">
+        <h4>Danger Zone</h4>
+        <form method="post" onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone!');">
+            {% csrf_token %}
+            <button type="submit" name="delete_account" class="btn btn-danger">Delete Account</button>
+        </form>
+    </div>
+
+    {% if messages %}
+        <ul class="messages">
+        {% for msg in messages %}
+            <li>{{ msg }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-function askChatbot() {
-    var question = document.querySelector('input[name="user_question"]').value;
-    var responseBox = document.getElementById('chatbot-response');
-
-    // Dummy response for demo. Integrate with your actual chatbot/backend later!
-    if (question.trim()) {
-        responseBox.innerHTML = `
-            <b>You asked:</b> ${question}<br>
-            <b>Bot:</b> Sorry, I am a demo chatbot. For real support, contact us or read our FAQ!
-        `;
-    } else {
-        responseBox.innerHTML = "<span style='color:#f43f5e;'>Please enter a question.</span>";
+document.addEventListener('DOMContentLoaded', function() {
+    const forms = ['editProfileForm', 'changePasswordForm', 'complaintForm', 'deleteAccountForm'];
+    function showForm(formId) {
+        forms.forEach(id =>
+            document.getElementById(id).style.display = (id === formId ? 'block' : 'none')
+        );
     }
-}
+    document.getElementById('showEditProfile').onclick = () => showForm('editProfileForm');
+    document.getElementById('showChangePassword').onclick = () => showForm('changePasswordForm');
+    document.getElementById('showComplaint').onclick = () => showForm('complaintForm');
+    document.getElementById('showDeleteAccount').onclick = () => showForm('deleteAccountForm');
+    // Optionally show edit profile as default:
+    showForm('editProfileForm');
+});
 </script>
 {% endblock %}

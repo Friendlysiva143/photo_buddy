@@ -1,10 +1,116 @@
-.settings-section { padding: 3rem 0; }
-.settings-block { margin-bottom: 2rem; background: #f8fafc; border-radius: 10px; padding: 2rem 1.5rem; box-shadow: 0 1px 8px rgba(40,80,220,0.05); }
-.section-title { font-size: 2rem; margin-bottom: 2rem; }
-.settings-list { list-style: none; padding: 0; }
-.settings-list li { margin-bottom: 1rem; }
-.settings-list a { color: #2563eb; text-decoration: none; font-weight: 500;}
-.settings-list a:hover { text-decoration: underline;}
-.chatbot-box { margin-top: 1.5rem; background: #eff6ff; padding: 1.2rem; border-radius: 8px;}
-.chatbot-intro { font-weight: 500; margin-bottom: 0.7rem; }
-.chatbot-response { margin-top: 1rem; background: #fff; border-radius: 7px; min-height: 40px; padding: 0.8rem; color: #0f172a;}
+.settings-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 32px;
+    background: #f7f8fa;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(60,70,130,0.13);
+}
+
+.settings-container h2 {
+    text-align: left;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #485076;
+}
+
+.settings-container hr {
+    margin: 30px 0;
+}
+
+.settings-actions { 
+    margin-bottom: 18px;
+}
+.settings-toggle {
+    margin-right: 8px;
+}
+
+.settings-form {
+    padding: 18px 0;
+}
+
+.settings-form h4 {
+    color: #485076;
+    margin-bottom: 14px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 7px;
+    color: #445;
+}
+
+.form-control {
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 1rem;
+    border: 1px solid #b8badc;
+    border-radius: 6px;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 4px #bfcafc;
+}
+
+.btn {
+    padding: 10px 22px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s, color 0.2s;
+    outline: none;
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    margin-right: 10px;
+}
+.btn-info:hover {
+    background: #485076;
+}
+.btn-danger {
+    background: #ff3636;
+    color: #fff;
+}
+.btn-danger:hover {
+    background: #c41a1a;
+}
+.messages {
+    margin-top: 16px;
+    list-style: none;
+    padding-left: 0;
+}
+.messages li {
+    background: #e6f6ff;
+    color: #2176ae;
+    padding: 10px 16px;
+    border-radius: 6px;
+    margin-bottom: 7px;
+    border-left: 4px solid #46c7fa;
+    font-size: 1rem;
+}
+@media (max-width: 700px) {
+    .settings-container {
+        padding: 14px;
+        border-radius: 7px;
+        margin: 10px;
+    }
+    .settings-container h2 {
+        font-size: 1.4rem;
+    }
+}

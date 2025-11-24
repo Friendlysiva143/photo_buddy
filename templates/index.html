@@ -5,6 +5,9 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
 {% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/index.js' %}"></script>
+{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
@@ -182,22 +185,5 @@
     </div>
 </section>
 {% endblock %}
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    let index = 0;
-    let slides = document.querySelectorAll('.carousel-img');
-    function showSlide(idx) {
-        slides.forEach((img, i) => {
-            img.style.display = (i === idx) ? 'block' : 'none';
-        });
-    }
-    setInterval(function() {
-        index = (index + 1) % slides.length;
-        showSlide(index);
-    }, 3000); // change image every 3 seconds
-    showSlide(index); // Show first slide on load
-});
-</script>
-{% endblock %}
+
 

@@ -123,8 +123,8 @@ CSRF_TRUSTED_ORIGINS = [
         "HOST": "localhost",
         "PORT": "5432",
     }
-}"""
-
+}
+"""
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -172,3 +172,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'photobuddy001@gmail.com'
+EMAIL_HOST_PASSWORD = 'fmrb jvfz fmfk geuv'  # Use Gmail app password or your SMTP password
