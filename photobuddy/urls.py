@@ -26,6 +26,7 @@ urlpatterns = [
 
     # Home Page
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
+    path('', views.index, name='index')
     path('about/', about, name='about'),
     path('safety/', safety, name='safety'),
     path('terms/', terms, name='terms'),
