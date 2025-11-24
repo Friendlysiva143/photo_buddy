@@ -37,11 +37,7 @@
                 <div class="hero-stats">
                     <div class="stat">
                         <div class="stat-number">
-                            {% if total_users >= 1000 %}
-                                {{ total_users|divisibleby:1|floatformat:-3 }}+
-                            {% else %}
                                 {{ total_users }}
-                            {% endif %}
                         </div>
                         <div class="stat-label">Active Users</div>
                     </div>
@@ -55,9 +51,14 @@
                     </div>
                 </div>
             </div>
-            <div class="hero-image">
-                <img src="{% static 'images/logo.png' %}" alt="Photo Buddy">
+
+            <div class="hero-carousel">
+                <img src="{% static 'images/logo.png' %}" class="carousel-img" alt="Photo 1" style="display:block;">
+                <img src="{% static 'images/photo2.jpg' %}" class="carousel-img" alt="Photo 2" style="display:none;">
+                <img src="{% static 'images/photo3.jpg' %}" class="carousel-img" alt="Photo 3" style="display:none;">
+                <!-- Add more images as needed -->
             </div>
+
         </div>
     </div>
 </section>
@@ -181,3 +182,22 @@
     </div>
 </section>
 {% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let index = 0;
+    let slides = document.querySelectorAll('.carousel-img');
+    function showSlide(idx) {
+        slides.forEach((img, i) => {
+            img.style.display = (i === idx) ? 'block' : 'none';
+        });
+    }
+    setInterval(function() {
+        index = (index + 1) % slides.length;
+        showSlide(index);
+    }, 3000); // change image every 3 seconds
+    showSlide(index); // Show first slide on load
+});
+</script>
+{% endblock %}
+
