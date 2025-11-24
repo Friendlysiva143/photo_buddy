@@ -6,6 +6,8 @@ from django.contrib import messages
 from .forms import EditProfileForm
 from django.core.mail import send_mail
 from django.contrib import messages
+import smtplib
+
 
 User = get_user_model()
 def home(request):
@@ -35,13 +37,18 @@ def settings_page(request):
             subject = request.POST.get('subject')
             message = request.POST.get('message')
             user_email = request.user.email
-            send_mail(
-                f'Complaint from {request.user.username}: {subject}',
-                message,
-                user_email,
-                ['photobuddy001@gmail.com'],
-                fail_silently=False,
-            )
+            try:
+                send_mail(
+                    subject,
+                    message,
+                    user_email,
+                    ['photobuddy001@gmail.com'],
+                    fail_silently=False,
+                )
+                messages.success(request, 'Your message has been sent!')
+            except smtplib.SMTPException as e:
+                messages.error(request, f'Mail failed to send: {e}')
+                # optionally log the error or print(e)
             messages.success(request, 'Your message has been sent!')
             return redirect('settings')
 
