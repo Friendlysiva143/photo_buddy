@@ -49,7 +49,6 @@ def settings_page(request):
             except smtplib.SMTPException as e:
                 messages.error(request, f'Mail failed to send: {e}')
                 # optionally log the error or print(e)
-            messages.success(request, 'Your message has been sent!')
             return redirect('settings')
 
         elif 'delete_account' in request.POST:
