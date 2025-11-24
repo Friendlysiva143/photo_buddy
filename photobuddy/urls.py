@@ -19,13 +19,17 @@ from django.urls import path,include
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static 
+from .views import about,safety,terms,privacy
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Home Page
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
-
+    path('about/', about, name='about'),
+    path('safety/', safety, name='safety'),
+    path('terms/', terms, name='terms'),
+    path('privacy/', privacy, name='privacy'),
     # Map Page
     path('map/', TemplateView.as_view(template_name='map/nearby-users.html'), name='map'),
 

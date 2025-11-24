@@ -36,7 +36,13 @@
                 </div>
                 <div class="hero-stats">
                     <div class="stat">
-                        <div class="stat-number">10K+</div>
+                        <div class="stat-number">
+                            {% if total_users >= 1000 %}
+                                {{ total_users|divisibleby:1|floatformat:-3 }}+
+                            {% else %}
+                                {{ total_users }}
+                            {% endif %}
+                        </div>
                         <div class="stat-label">Active Users</div>
                     </div>
                     <div class="stat">

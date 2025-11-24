@@ -22,9 +22,9 @@
     <nav class="navbar">
         <div class="container">
             <div class="nav-brand">
-                <a href="{% url 'home' %}" class="nav-brand">
+                <a href="{% url 'home' %}" class="nav-brand" style="text-decoration: none;">
                     <i class="fas fa-camera"></i>
-                    <span>Photo Buddy</span>
+                    <span>PHOTO BUDDY</span>
                 </a>
             </div>
 
@@ -51,8 +51,8 @@
                         <a href="{% url 'profile' %}">
                         <img src="{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}"
                             alt="Profile Picture" class="avatar">
-                        <span>{{ request.user.username }}</span>
                          </a>
+                         <a href="{% url 'profile' %}"><span>{{ request.user.username }}</span></a>
                     </div>
                 {% else %}
                     <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
@@ -98,21 +98,21 @@
                 </div>
                 <div class="footer-section">
                     <h4>Quick Links</h4>
-                    <a href="/about">About</a>
-                    <a href="/how-it-works">How It Works</a>
-                    <a href="/safety">Safety Tips</a>
+                    <a href="{% url about %}">About</a>
+                    <a href="{% url 'index' %}#how-it-works">How It Works</a>
+                    <a href="{% url 'safety' %}">Safety Tips</a>
                 </div>
                 <div class="footer-section">
                     <h4>Legal</h4>
-                    <a href="/terms">Terms of Service</a>
-                    <a href="/privacy">Privacy Policy</a>
+                    <a href="{% url 'terms' %}">Terms of Service</a>
+                    <a href="{% url 'privacy' %}">Privacy Policy</a>
                 </div>
                 <div class="footer-section">
                     <h4>Connect</h4>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/friendly_siva___420/"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/siva.prasad.419683/"><i class="fab fa-twitter"></i></a>
                     </div>
                 </div>
             </div>
