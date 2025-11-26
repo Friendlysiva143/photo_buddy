@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
             btnElement.disabled = true;
             btnElement.innerText = "Requesting...";
         }
-        fetch('/request-cameraman/', {
+        fetch('/matches/request-cameraman/', {
             method: 'POST',
             credentials: "same-origin",
             headers: {
