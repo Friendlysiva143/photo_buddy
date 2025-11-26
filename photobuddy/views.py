@@ -7,12 +7,18 @@ from .forms import EditProfileForm
 from django.core.mail import send_mail
 from django.contrib import messages
 import smtplib
-
-
-User = get_user_model()
+from django.db.models import Avg
+from accounts.models import UserReview    # Adjust app/model name if needed
 def home(request):
+    User = get_user_model()
     total_users = User.objects.count()
-    return render(request, "index.html", {"total_users": total_users})
+    average = UserReview.objects.aggregate(Avg('rating'))['rating__avg']
+    context = {
+        'average_rating': round(average, 2) if average else None,
+        'total_users': total_users,
+        # ...other context variables...
+    }
+    return render(request, 'index.html', context)
 
 def about(request):
     return render(request, 'about.html')
@@ -80,3 +86,5 @@ def settings_page(request):
         'password_form': password_form,
     }
     return render(request, 'auth/settings.html', context)
+
+

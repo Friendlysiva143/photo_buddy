@@ -7,4 +7,6 @@ urlpatterns = [
     path("accept/<int:req_id>/", views.accept_request, name="accept_request"),
     path("decline/<int:req_id>/", views.decline_request, name="decline_request"),
     path("active/", views.active_matches, name="active_matches"),
+    path('matches/request-cameraman/', views.request_cameraman, name='request_cameraman'),
+
 ]

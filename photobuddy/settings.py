@@ -99,14 +99,14 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
+"""
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get("DATABASE_URL"),
         conn_max_age=600,
         ssl_require=True
     )
-}
+}"""
 
 CSRF_TRUSTED_ORIGINS = [
     "https://photo-buddy.onrender.com",
@@ -114,7 +114,7 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # Local PostgreSQL configuration
-"""DATABASES = {
+DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "photo_buddy",
@@ -124,7 +124,7 @@ CSRF_TRUSTED_ORIGINS = [
         "PORT": "5432",
     }
 }
-"""
+
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 

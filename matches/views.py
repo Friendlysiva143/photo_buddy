@@ -109,3 +109,20 @@ def active_matches(request):
         matches_with_other.append({'match': match, 'other_user': other_user})
 
     return render(request, 'matches/active.html', {'matches': matches_with_other})
+
+from django.http import JsonResponse
+from django.contrib.auth import get_user_model
+
+@login_required
+def request_cameraman(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        User = get_user_model()
+        try:
+            cameraman = User.objects.get(username=username, is_cameraman=True)
+            # Logic to create a request, send a notification/chat, etc.
+            # For demo, just return sent status.
+            return JsonResponse({"status": "sent"})
+        except User.DoesNotExist:
+            return JsonResponse({"status": "user_not_found"})
+    return JsonResponse({"status": "error", "message": "Bad method"})

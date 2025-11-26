@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+.star-rating input[type="radio"] { display: none; }
+.star-rating label {
+    color: #ccc;
+    font-size: 2.2em;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.star-rating input[type="radio"]:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #FFD600;
+}
+.star-rating {
+    direction: rtl;
+    text-align: left;
+}
+.star-rating label { float: right; }
+.star-rating label:before {
+    content: '★';
+}
+.feedback-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 6px 24px rgba(55,65,81,0.10);
+    padding: 2em 2em 1.5em 2em;
+    max-width: 430px;
+    margin: 2.5em auto;
+    text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="feedback-card">
+    <h2 class="card-header">Rate Your Experience</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <div class="star-rating">
+                {% for i in "54321" %}
+                    <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" {% if form.rating.value == i|stringformat:"i" %}checked{% endif %}>
+                    <label for="star{{ i }}"></label>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="form-group" style="margin-top: 1.1em;">
+            {{ form.review }}
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">Submit &amp; Logout</button>
+    </form>
+</div>
+{% endblock %}

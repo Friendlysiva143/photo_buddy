@@ -6,4 +6,4 @@ User = get_user_model()
 class EditProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['username', 'email','bio','profile_picture']  # Add fields as needed for your custom model
+        fields = ['username', 'email','bio','profile_picture','is_cameraman']  # Add fields as needed for your custom model

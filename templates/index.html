@@ -49,7 +49,12 @@
                         <div class="stat-label">Photos Exchanged</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-number">4.9★</div>
+                        <div class="stat-number">
+                            {% if average_rating %}
+                                {{ average_rating }} &#11088;
+                            {% else %}
+                                No ratings yet.
+                            {% endif %}</div>
                         <div class="stat-label">Average Rating</div>
                     </div>
                 </div>

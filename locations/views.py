@@ -29,6 +29,7 @@ def nearby_users(request):
                 'username': loc.user.username,
                 'lat': loc.latitude,
                 'lng': loc.longitude,
+                'is_cameraman': getattr(loc.user, 'is_cameraman', False),
             })
     return JsonResponse(nearby, safe=False)
 

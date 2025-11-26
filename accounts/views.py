@@ -3,6 +3,10 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
 from django import forms
+from django.contrib.auth.decorators import login_required
+from .forms import UserReviewForm
+from django.contrib.auth import logout as django_logout
+
 
 # Extend UserCreationForm to include custom fields (bio/profile_picture)
 class CustomUserCreationForm(UserCreationForm):
@@ -41,14 +45,21 @@ def login_view(request):
     return render(request, 'auth/login.html')
 
 
-from django.contrib.auth import logout
+@login_required
+def feedback_and_logout(request):
+    if request.method == 'POST':
+        form = UserReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.user = request.user
+            review.save()
+            messages.success(request, "Thanks for your feedback!")
+            django_logout(request)
+            return redirect('login')  # Or your homepage
+    else:
+        form = UserReviewForm()
+    return render(request, 'feedback/review_before_logout.html', {'form': form})
 
-def logout_view(request):
-    logout(request)
-    messages.success(request, "Logged out successfully!")
-    return redirect('login')
-
-from django.contrib.auth.decorators import login_required
 
 @login_required
 def profile(request):
