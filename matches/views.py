@@ -30,12 +30,14 @@ def request_cameraman(request):
         username = request.POST.get("username")
         try:
             cameraman = User.objects.get(username=username, is_cameraman=True)
-            # [Optional: create CameramanRequest object, send notification/message, etc.]
+            # Prevent duplicate requests
+            if MatchRequest.objects.filter(sender=request.user, receiver=cameraman, status='pending').exists():
+                return JsonResponse({"status": "already_sent"})
+            MatchRequest.objects.create(sender=request.user, receiver=cameraman, status='pending')
             return JsonResponse({"status": "sent"})
         except User.DoesNotExist:
             return JsonResponse({"status": "user_not_found"})
     return JsonResponse({"status": "error", "message": "Bad method"})
-
 @login_required
 def match_requests(request):
     received = MatchRequest.objects.filter(receiver=request.user, status="pending")
