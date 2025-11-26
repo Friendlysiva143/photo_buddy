@@ -1,22 +1,33 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser
 from django import forms
 from django.contrib.auth.decorators import login_required
-from .forms import UserReviewForm
-from django.contrib.auth import logout as django_logout
+from django.contrib.auth import authenticate, login, logout as django_logout
+from .models import CustomUser
+from .forms import UserReviewForm   # If you have a review form
 
-
-# Extend UserCreationForm to include custom fields (bio/profile_picture)
+# Registration form with extra fields
 class CustomUserCreationForm(UserCreationForm):
     bio = forms.CharField(required=False, widget=forms.Textarea)
     profile_picture = forms.ImageField(required=False)
+    is_cameraman = forms.BooleanField(label='Register as Professional Cameraman', required=False)
 
     class Meta(UserCreationForm.Meta):
         model = CustomUser
-        fields = UserCreationForm.Meta.fields + ('email', 'bio', 'profile_picture')
+        fields = UserCreationForm.Meta.fields + ('email', 'bio', 'profile_picture', 'is_cameraman')
 
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.bio = self.cleaned_data.get('bio', "")
+        if self.cleaned_data.get('profile_picture'):
+            user.profile_picture = self.cleaned_data['profile_picture']
+        user.is_cameraman = self.cleaned_data.get('is_cameraman', False)
+        if commit:
+            user.save()
+        return user
+
+# Register view
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST, request.FILES)
@@ -30,11 +41,10 @@ def register(request):
         form = CustomUserCreationForm()
     return render(request, 'auth/register.html', {'form': form})
 
-from django.contrib.auth import authenticate, login
-
+# Login view
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST.get('username')    # Must match the form field name!
+        username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
@@ -44,7 +54,12 @@ def login_view(request):
             messages.error(request, "Invalid credentials!")
     return render(request, 'auth/login.html')
 
+# Profile view
+@login_required
+def profile(request):
+    return render(request, 'auth/profile.html', {'user': request.user})
 
+# Feedback and logout view
 @login_required
 def feedback_and_logout(request):
     if request.method == 'POST':
@@ -55,13 +70,7 @@ def feedback_and_logout(request):
             review.save()
             messages.success(request, "Thanks for your feedback!")
             django_logout(request)
-            return redirect('login')  # Or your homepage
+            return redirect('login')
     else:
         form = UserReviewForm()
     return render(request, 'feedback/review_before_logout.html', {'form': form})
-
-
-@login_required
-def profile(request):
-    return render(request, 'auth/profile.html', {'user': request.user})
-

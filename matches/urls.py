@@ -10,3 +10,7 @@ urlpatterns = [
     path('matches/request-cameraman/', views.request_cameraman, name='request_cameraman'),
 
 ]
+from locations.views import nearby_users
+urlpatterns += [
+    path('locations/nearby-users-json/', nearby_users, name='nearby_users_json'),
+]

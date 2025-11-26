@@ -1,15 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Set default map center (Hyderabad)
     const defaultLat = 17.385;
     const defaultLng = 78.486;
     const map = L.map('map').setView([defaultLat, defaultLng], 14);
 
-    // OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // CSRF token
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -25,13 +22,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     const csrftoken = getCookie('csrftoken');
 
-    // Global function to send match request (IMPROVED)
+    // AJAX request for match (normal users)
     window.sendMatchRequest = function(username, btnElement = null) {
         if (btnElement) {
             btnElement.disabled = true;
             btnElement.innerText = "Sending...";
         }
-
         fetch('/matches/send-request/', {
             method: 'POST',
             credentials: "same-origin",
@@ -41,16 +37,9 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             body: `username=${encodeURIComponent(username)}`
         })
-
-        .then(res => {
-            return res.json().then(data => {
-                // Even on bad status, get JSON body/message
-                return { ok: res.ok, status: res.status, data: data };
-            });
-        })
+        .then(res => res.json().then(data => { return {ok: res.ok, status: res.status, data: data}; }))
         .then(resp => {
             let data = resp.data;
-            // Handle all cases using backend status
             if (data.status === 'sent') {
                 alert(`✅ Match request sent to ${username}`);
                 if (btnElement) {
@@ -64,14 +53,8 @@ document.addEventListener("DOMContentLoaded", function () {
             } else if (data.status === 'user_not_found') {
                 alert(`❌ User not found: ${username}`);
                 if (btnElement) btnElement.disabled = false;
-            } else if (data.status === 'error') {
-                alert(`❌ ${data.message || "Something went wrong."}`);
-                if (btnElement) {
-                    btnElement.disabled = false;
-                    btnElement.innerText = "Request";
-                }
             } else {
-                alert(`❌ Unknown response from server.`);
+                alert(`❌ ${data.message || "Something went wrong."}`);
                 if (btnElement) {
                     btnElement.disabled = false;
                     btnElement.innerText = "Request";
@@ -79,7 +62,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         })
         .catch(err => {
-            // Any unexpected network/parsing error
             console.error("Match request failed:", err);
             alert("❌ Something went wrong. Please try again.");
             if (btnElement) {
@@ -89,17 +71,60 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     };
 
-    // Detect user's location
+    // AJAX request for cameraman
+    window.requestCameraman = function(username, btnElement = null) {
+        if (btnElement) {
+            btnElement.disabled = true;
+            btnElement.innerText = "Requesting...";
+        }
+        fetch('/request-cameraman/', {
+            method: 'POST',
+            credentials: "same-origin",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrftoken
+            },
+            body: `username=${encodeURIComponent(username)}`
+        })
+        .then(res => res.json().then(data => { return {ok: res.ok, status: res.status, data: data}; }))
+        .then(resp => {
+            let data = resp.data;
+            if (data.status === 'sent') {
+                alert(`✅ Cameraman request sent to ${username}`);
+                if (btnElement) {
+                    btnElement.innerText = "Requested ✔";
+                    btnElement.classList.remove("btn-danger");
+                    btnElement.classList.add("btn-success");
+                }
+            } else if (data.status === 'user_not_found') {
+                alert(`❌ Cameraman not found: ${username}`);
+                if (btnElement) btnElement.disabled = false;
+            } else {
+                alert(`❌ ${data.message || "Something went wrong."}`);
+                if (btnElement) {
+                    btnElement.disabled = false;
+                    btnElement.innerText = "Request Cameraman";
+                }
+            }
+        })
+        .catch(err => {
+            console.error("Cameraman request failed:", err);
+            alert("❌ Something went wrong. Please try again.");
+            if (btnElement) {
+                btnElement.disabled = false;
+                btnElement.innerText = "Request Cameraman";
+            }
+        });
+    };
+
     function initMap(userLat = defaultLat, userLng = defaultLng) {
         map.setView([userLat, userLng], 16);
 
-        // Add marker for current user
         L.marker([userLat, userLng])
             .addTo(map)
             .bindPopup("You are here!")
             .openPopup();
 
-        // Send user location to backend
         fetch('/locations/update-location/', {
             method: 'POST',
             headers: {
@@ -109,28 +134,40 @@ document.addEventListener("DOMContentLoaded", function () {
             body: JSON.stringify({latitude: userLat, longitude: userLng})
         });
 
-        // Fetch nearby users
         fetch('/locations/nearby-users-json/')
             .then(res => res.json())
             .then(users => {
                 const userListEl = document.getElementById('nearby-users');
                 if (userListEl) userListEl.innerHTML = '';
-
                 users.forEach(u => {
-                    // Map marker
-                    const marker = L.marker([u.lat, u.lng]).addTo(map);
-                    marker.bindPopup(
-                        `<strong>${u.username}</strong><br>
-                         <button class="btn btn-sm btn-primary" onclick="sendMatchRequest('${u.username}', this)">Send Match Request</button>`
-                    );
+                    let markerIcon = L.icon({
+                        iconUrl: u.is_cameraman ? '/static/images/cameraman-marker.png' : '/static/images/user-marker.png',
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 32],
+                        popupAnchor: [0, -32]
+                    });
+                    const marker = L.marker([u.lat, u.lng], {icon: markerIcon}).addTo(map);
+                    let popupHtml = `<strong>${u.username}</strong><br>`;
+                    if (u.is_cameraman) {
+                        popupHtml += `<span style="color:red;">Professional Cameraman</span><br>`;
+                        popupHtml += `<button class="btn btn-sm btn-danger" onclick="requestCameraman('${u.username}', this)">Request Cameraman</button>`;
+                    } else {
+                        popupHtml += `<button class="btn btn-sm btn-primary" onclick="sendMatchRequest('${u.username}', this)">Request</button>`;
+                    }
+                    marker.bindPopup(popupHtml);
 
-                    // Sidebar / list
                     if (userListEl) {
                         const li = document.createElement('li');
                         li.innerHTML = `
                             <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;">
-                                <span>${u.username}</span>
-                                <button class="btn btn-sm btn-primary" onclick="sendMatchRequest('${u.username}', this)">Request</button>
+                                <span>
+                                    ${u.username}${u.is_cameraman ? ' <span style="color:red;">&#11044; Cameraman</span>' : ''}
+                                </span>
+                                ${
+                                    u.is_cameraman
+                                        ? `<button class="btn btn-sm btn-danger" onclick="requestCameraman('${u.username}', this)">Request Cameraman</button>`
+                                        : `<button class="btn btn-sm btn-primary" onclick="sendMatchRequest('${u.username}', this)">Request</button>`
+                                }
                             </div>
                         `;
                         userListEl.appendChild(li);
