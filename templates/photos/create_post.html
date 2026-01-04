@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Post - Photo Buddy{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">📸 Create New Post</h2>
+                    
+                    <form method="POST" enctype="multipart/form-data" id="postForm">
+                        {% csrf_token %}
+                        
+                        <!-- Image Upload -->
+                        <div class="mb-3">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">
+                                <strong>Upload Photo</strong>
+                            </label>
+                            {{ form.image }}
+                            {% if form.image.errors %}
+                                <div class="alert alert-danger mt-2">
+                                    {{ form.image.errors }}
+                                </div>
+                            {% endif %}
+                            <small class="text-muted d-block mt-2">
+                                Supported formats: JPG, PNG, GIF (Max 5MB)
+                            </small>
+                        </div>
+                        
+                        <!-- Image Preview -->
+                        <div class="mb-3" id="imagePreview" style="display: none;">
+                            <img id="previewImage" src="" alt="Preview" class="img-fluid rounded" style="max-height: 300px;">
+                        </div>
+                        
+                        <!-- Caption -->
+                        <div class="mb-3">
+                            <label for="{{ form.caption.id_for_label }}" class="form-label">
+                                <strong>Caption</strong>
+                            </label>
+                            {{ form.caption }}
+                            <small class="text-muted d-block mt-2">
+                                <span id="charCount">0</span>/2000 characters
+                            </small>
+                            {% if form.caption.errors %}
+                                <div class="alert alert-danger mt-2">
+                                    {{ form.caption.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg flex-grow-1">
+                                <i class="bi bi-cloud-upload"></i> Share Post
+                            </button>
+                            <a href="{% url 'posts:posts_feed' %}" class="btn btn-secondary btn-lg">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Image Preview
+document.getElementById('{{ form.image.id_for_label }}').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('previewImage').src = event.target.result;
+            document.getElementById('imagePreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Character counter
+document.getElementById('{{ form.caption.id_for_label }}').addEventListener('input', function() {
+    document.getElementById('charCount').textContent = this.value.length;
+});
+</script>
+
+<style>
+.card {
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.card-body {
+    background: white;
+    border-radius: 12px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    padding: 10px 12px;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+#imagePreview {
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f5f5f5;
+    padding: 10px;
+}
+</style>
+{% endblock %}

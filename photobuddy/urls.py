@@ -46,6 +46,9 @@ urlpatterns = [
     path("demo-chat/", TemplateView.as_view(template_name="chat/demo_chat.html"), name="demo_chat"),
     path('locations/', include('locations.urls')),
     path('settings/', settings_page, name='settings'),
+    # posts
+    path("photos/",include('photos.urls')),
+
 
 ]
 

@@ -74,3 +74,4 @@ def feedback_and_logout(request):
     else:
         form = UserReviewForm()
     return render(request, 'feedback/review_before_logout.html', {'form': form})
+
