@@ -3,52 +3,79 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+
+<style>
+.posts-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-top:30px;
+}
+
+.posts-grid img{
+    width:100%;
+    height:260px;
+    object-fit:cover;
+    border-radius:6px;
+    transition:0.3s;
+}
+
+.posts-grid img:hover{
+    transform:scale(1.03);
+}
+</style>
 {% endblock %}
 
 {% block title %}Profile | Photo Buddy{% endblock %}
 
 {% block content %}
 <section class="profile-section">
-    <div class="container">
-        <div class="card" style="max-width:410px;margin:auto;">
-            <h2 class="card-header">{{ user.username }}'s Profile</h2>
-            {% if messages %}
-                <div id="popup-message" class="popup-message">
-                    {% for message in messages %}
-                        {{ message }}
-                    {% endfor %}
-                </div>
-            {% endif %}
+<div class="container">
 
-            <div class="profile-info" style="text-align:center;">
-                {% if user.profile_picture %}
-                    <img src="{{ user.profile_picture.url }}" class="avatar" alt="Profile Picture" style="width:120px; border-radius:50%; margin:1em auto 0.5em auto;">
-                {% else %}
-                    <img src="{% static 'images/default-avatar.png' %}" class="avatar" alt="Default Profile" style="width:120px; border-radius:50%; margin:1em auto 0.5em auto;">
-                {% endif %}
-                <p><strong>Username:</strong> {{ user.username }}</p>
-                <p><strong>Email:</strong> {{ user.email }}</p>
-                <p><strong>Bio:</strong> {{ user.bio|default:"No bio yet." }}</p>
-            </div>
+<!-- PROFILE CARD -->
+<div class="card" style="max-width:450px;margin:auto;">
+<h2 class="card-header">{{ user.username }}'s Profile</h2>
 
-            <div style="margin-top:2em; text-align:center;">
-                <a href="{% url 'feedback_and_logout' %}" class="btn btn-outline" style="margin-left:15px;">Logout</a>
+<div class="profile-info" style="text-align:center;">
 
-            </div>
-        </div>
-    </div>
+{% if user.profile_picture %}
+<img src="{{ user.profile_picture.url }}" 
+style="width:120px;border-radius:50%;">
+{% else %}
+<img src="{% static 'images/default-avatar.png' %}" 
+style="width:120px;border-radius:50%;">
+{% endif %}
+
+<p><strong>Username:</strong> {{ user.username }}</p>
+<p><strong>Email:</strong> {{ user.email }}</p>
+<p><strong>Bio:</strong> {{ user.bio|default:"No bio yet." }}</p>
+
+</div>
+
+<div style="margin-top:20px;text-align:center;">
+<a href="{% url 'feedback_and_logout' %}" class="btn btn-outline">Logout</a>
+</div>
+
+</div>
+
+
+<!-- USER POSTS -->
+<h3 style="text-align:center;margin-top:40px;">Posts</h3>
+
+<div class="posts-grid">
+
+{% for post in posts %}
+
+<a href="{% url 'posts:post_detail' post.id %}">
+    <img src="{{ post.image.url }}">
+</a>
+
+{% empty %}
+<p style="text-align:center;">No posts uploaded yet.</p>
+{% endfor %}
+
+</div>
+
+</div>
 </section>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-window.onload = function() {
-    var popup = document.getElementById('popup-message');
-    if (popup) {
-        setTimeout(function() {
-            popup.style.display = 'none';
-        }, 3500);
-    }
-}
-</script>
 {% endblock %}

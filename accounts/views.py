@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout as django_logout
 from .models import CustomUser
 from .forms import UserReviewForm   # If you have a review form
+from photos.models import Post
 
 # Registration form with extra fields
 class CustomUserCreationForm(UserCreationForm):
@@ -54,10 +55,16 @@ def login_view(request):
             messages.error(request, "Invalid credentials!")
     return render(request, 'auth/login.html')
 
-# Profile view
+# profile View
 @login_required
 def profile(request):
-    return render(request, 'auth/profile.html', {'user': request.user})
+    user_posts = Post.objects.filter(user=request.user)
+
+    context = {
+        'user': request.user,
+        'posts': user_posts
+    }
+    return render(request, 'auth/profile.html', context)
 
 # Feedback and logout view
 @login_required

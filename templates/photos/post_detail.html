@@ -63,6 +63,14 @@
                         <p class="card-text">{{ post.caption }}</p>
                     </div>
                 {% endif %}
+                {% if post.style %}
+                    <span class="badge bg-secondary">{{ post.style }}</span>
+                {% endif %}
+
+                {% for tag in post.tags.all %}
+                    <span class="badge bg-light text-dark">#{{ tag.name }}</span>
+                {% endfor %}
+
 
                 <!-- Likes & Comments Count -->
                 <div class="card-body border-bottom py-2">
@@ -151,6 +159,7 @@
                         </p>
                     {% endif %}
                 </div>
+                
             </div>
 
             <!-- Back Button -->
@@ -235,6 +244,7 @@ document.querySelector('.like-form')?.addEventListener('submit', function(e) {
             btn.innerHTML = '<i class="bi bi-heart"></i> Like';
         }
     });
+    
 });
 </script>
 {% endblock %}

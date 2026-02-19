@@ -47,7 +47,7 @@ urlpatterns = [
     path('locations/', include('locations.urls')),
     path('settings/', settings_page, name='settings'),
     # posts
-    path("photos/",include('photos.urls')),
+    path("photos/", include(('photos.urls', 'posts'), namespace='posts')),
 
 
 ]

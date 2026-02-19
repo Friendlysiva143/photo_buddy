@@ -6,7 +6,7 @@ class PostForm(forms.ModelForm):
     
     class Meta:
         model = Post
-        fields = ['image', 'caption']
+        fields = ['image', 'caption','style']
         widgets = {
             'image': forms.FileInput(attrs={
                 'class': 'form-control',

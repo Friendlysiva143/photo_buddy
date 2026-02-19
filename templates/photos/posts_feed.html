@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load post_extras %}
 
 {% block title %}Posts Feed - Photo Buddy{% endblock %}
 
@@ -28,13 +29,25 @@
                         <div class="card-header bg-white border-bottom">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
-                                    <img src="https://ui-avatars.com/api/?name={{ post.user.username }}&background=667eea&color=fff" 
-                                         alt="{{ post.user.username }}" class="rounded-circle" width="40" height="40">
+                                    {% if post.user.profile_picture %}
+    <img src="{{ post.user.profile_picture.url }}"
+         alt="{{ post.user.username }}"
+         class="rounded-circle"
+         width="40"
+         height="40"
+         style="object-fit:cover;">
+{% else %}
+    <img src="https://ui-avatars.com/api/?name={{ post.user.username }}&background=667eea&color=fff"
+         class="rounded-circle"
+         width="40"
+         height="40">
+{% endif %}
+
                                     <div class="ms-3">
                                         <h6 class="mb-0">
-                                            
+                                            <a href="{% url 'posts:user_posts' post.user.username %}" class="text-dark text-decoration-none">
                                                 <strong>{{ post.user.get_full_name|default:post.user.username }}</strong>
-                                         
+                                            </a>
                                         </h6>
                                         <small class="text-muted">
                                             {{ post.created_at|date:"M d, Y \a\t g:i A" }}
@@ -93,8 +106,10 @@
                             <!-- Caption -->
                             {% if post.caption %}
                                 <p class="card-text mb-3">
-                                    <strong>{{ post.user.username }}</strong> {{ post.caption }}
+                                    <strong>{{ post.user.username }}</strong>
+                                    {{ post.caption|format_caption|safe }}
                                 </p>
+
                             {% endif %}
 
                             <!-- Like Button -->
