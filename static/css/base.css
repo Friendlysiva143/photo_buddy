@@ -416,3 +416,22 @@ body {
 .dropdown-menu {
     z-index: 9999 !important;
 }
+
+/* Fix horizontal shift: prevent page horizontal overflow and ensure media scale */
+html, body {
+    overflow-x: hidden;
+}
+
+/* Ensure images/videos never cause horizontal overflow */
+img, video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Constrain posts grid to its container */
+.posts-grid {
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+

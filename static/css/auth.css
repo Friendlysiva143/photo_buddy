@@ -1,3 +1,6 @@
+/* static/css/auth.css */
+
+/* Root color variables */
 :root {
     --primary: #2563eb;
     --primary-hover: #1d4ed8;
@@ -8,22 +11,12 @@
     --text-light: #64748b;
 }
 
-body {
-    background: var(--gray-bg);
-    font-family: 'Segoe UI', 'Arial', sans-serif;
-    color: var(--text);
-}
+/* Body for auth pages */
 
-.auth-section {
-    padding: 4rem 0;
-}
+/* Scope styles only for auth pages */
 
-.container {
-    max-width: 500px;
-    margin: auto;
-}
-
-.card {
+/* Card styles for login/register forms */
+.auth-section .card {
     background: #fff;
     border-radius: 16px;
     box-shadow: 0 8px 24px rgba(55,65,81,0.1);
@@ -33,7 +26,7 @@ body {
     transition: box-shadow 0.2s;
 }
 
-.card-header {
+.auth-section .card-header {
     font-size: 1.6rem;
     font-weight: 700;
     margin-bottom: 1.1em;
@@ -42,11 +35,13 @@ body {
     color: var(--primary);
 }
 
+/* Form group spacing */
 .auth-form .form-group {
     margin-bottom: 1.1em;
 }
 
-.form-label {
+/* Form labels */
+.auth-form .form-label {
     display: block;
     font-size: 1em;
     font-weight: 500;
@@ -54,12 +49,13 @@ body {
     color: var(--primary);
 }
 
-.form-input,
-input[type="email"],
-input[type="text"],
-input[type="password"],
-input[type="file"],
-textarea {
+/* Input fields */
+.auth-form .form-input,
+.auth-form input[type="email"],
+.auth-form input[type="text"],
+.auth-form input[type="password"],
+.auth-form input[type="file"],
+.auth-form textarea {
     width: 100%;
     padding: 0.72em 1em;
     border-radius: 8px;
@@ -72,15 +68,16 @@ textarea {
     box-sizing: border-box;
 }
 
-.form-input:focus,
-input[type="email"]:focus,
-input[type="text"]:focus,
-input[type="password"]:focus {
+.auth-form .form-input:focus,
+.auth-form input[type="email"]:focus,
+.auth-form input[type="text"]:focus,
+.auth-form input[type="password"]:focus {
     border-color: var(--primary);
     background: var(--gray-light);
 }
 
-.btn {
+/* Buttons */
+.auth-form .btn {
     padding: 0.72em 1.35em;
     border-radius: 8px;
     font-size: 1em;
@@ -94,36 +91,39 @@ input[type="password"]:focus {
     display: inline-block;
 }
 
-.btn.btn-lg {
+.auth-form .btn.btn-lg {
     width: 100%;
     font-size: 1.08em;
 }
 
-.btn-outline {
+.auth-form .btn-outline {
     background: #fff;
     border: 1.4px solid var(--primary);
     color: var(--primary);
 }
 
-.btn-outline:hover, .btn:hover {
+.auth-form .btn-outline:hover,
+.auth-form .btn:hover {
     background: var(--primary-hover);
     color: #fff;
 }
 
-.btn.btn-sm {
+.auth-form .btn.btn-sm {
     font-size: 0.93em;
     padding: 0.5em 1em;
     margin-top: 0;
 }
 
-.form-foot {
+/* Form foot text */
+.auth-form .form-foot {
     margin-top: 1.15em;
     text-align: center;
     font-size: 1em;
     color: var(--text-light);
 }
 
-.popup-message {
+/* Popup message */
+.auth-section .popup-message {
     margin-bottom: 1.2em;
     padding: 0.88em 1.05em;
     background: var(--primary);
@@ -134,24 +134,44 @@ input[type="password"]:focus {
     box-shadow: 0 2px 14px rgba(49,88,224,0.12);
     animation: slide-down 0.5s;
 }
+
 @keyframes slide-down {
-    from { opacity: 0; margin-top: -32px;}
-    to { opacity: 1; margin-top: 0;}
+    from { opacity: 0; margin-top: -32px; }
+    to { opacity: 1; margin-top: 0; }
 }
 
-input[type="file"] {
+/* File input */
+.auth-form input[type="file"] {
     background: none;
     padding: 0;
 }
 
+/* Responsive adjustments */
 @media (max-width: 600px) {
-    .container, .card {
+    .auth-section .container,
+    .auth-section .card {
         padding: 1em;
     }
     .auth-section {
         padding: 1.5em 0;
     }
-    .card-header {
+    .auth-section .card-header {
         font-size: 1.12rem;
     }
+}
+
+/* Ensure profile/auth pages don't cause horizontal overflow */
+html, body {
+    overflow-x: hidden;
+}
+
+img, video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.posts-grid {
+    box-sizing: border-box;
+    overflow-x: hidden;
 }

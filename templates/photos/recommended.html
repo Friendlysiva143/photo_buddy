@@ -1,0 +1,33 @@
+<h2>Recommended for You</h2>
+<div class="posts-grid">
+{% if posts %}
+
+  {% for post in posts %}
+    <div class="post-card">
+      <img src="{{ post.image.url }}" alt="Post image">
+      <p>{{ post.caption }}</p>
+      <p>Style: {{ post.style }}</p>
+    </div>
+  {% endfor %}
+  {% else %}
+<p>No recommendations available yet. Check back later!</p>
+{% endif %}
+</div>
+
+<style>
+.posts-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.post-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 200px;
+    text-align: center;
+}
+.post-card img {
+    max-width: 100%;
+    height: auto;
+}
+</style>

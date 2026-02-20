@@ -11,33 +11,54 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <div class="d-flex align-items-center gap-4">
-                        <!-- Profile Avatar -->
+                        <!-- Profile Avatar 
                         <div>
                             <img src="https://ui-avatars.com/api/?name={{ profile_user.username }}&size=120&background=667eea&color=fff" 
                                  alt="{{ profile_user.username }}" class="rounded-circle" width="120" height="120">
-                        </div>
+                        </div>-->
+                         <a href="{% url 'posts:user_posts' profile_user.username %}" class="text-dark text-decoration-none">
+                                <div class="d-flex align-items-center">
+                                    {% if profile_user.profile_picture %}
+                                    <img src="{{ profile_user.profile_picture.url }}"
+                                        alt="{{ profile_user.username }}"
+                                        class="rounded-circle"
+                                        width="40"
+                                        height="40"
+                                        style="object-fit:cover;">
+                                {% else %}
+                                    <img src="https://ui-avatars.com/api/?name={{ post.user.username }}&background=667eea&color=fff"
+                                        class="rounded-circle"
+                                        width="40"
+                                        height="40">
+                                {% endif %}
+
+                            </div>
+                                     </a>
 
                         <!-- Profile Info -->
                         <div class="flex-grow-1">
                             <h2 class="mb-1">{{ profile_user.get_full_name|default:profile_user.username }}</h2>
                             <p class="text-muted mb-2">@{{ profile_user.username }}</p>
+                            <p>{{ profile_user.bio|default:"No bio available." }}</p>
                             
                             {% if profile_user.email %}
                                 <p class="text-muted mb-2">
                                     <i class="bi bi-envelope"></i> {{ profile_user.email }}
                                 </p>
                             {% endif %}
+                            <div>
+                                {% if profile_user.is_cameraman %}
+                                    <span class="badge bg-success">Cameraman</span>
+                                {% endif %}
+                            </div>
 
                             <div class="mt-3">
                                 <span class="badge bg-primary me-2">
                                     <strong>{{ posts_count }}</strong> Posts
                                 </span>
                                 
-                                {% if request.user == profile_user %}
-                                    <a href="{% url 'posts:create_post' %}" class="btn btn-sm btn-primary">
-                                        <i class="bi bi-plus-circle"></i> New Post
-                                    </a>
-                                {% endif %}
+                                <span class="badge bg-secondary">
+                                    <strong>{{ matches_count }}</strong> Matches
                             </div>
                         </div>
 

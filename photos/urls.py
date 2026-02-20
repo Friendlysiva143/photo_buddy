@@ -31,4 +31,8 @@ urlpatterns = [
     # ============================================================
     path('tag/<str:tag>/', views.tag_posts, name='tag_posts'),
 
+    
+    path('recommended/', views.recommended_posts_view, name='recommended_posts'),
+
+
 ]

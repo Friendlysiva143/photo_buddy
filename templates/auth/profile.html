@@ -5,23 +5,101 @@
 <link rel="stylesheet" href="{% static 'css/auth.css' %}">
 
 <style>
-.posts-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:10px;
-    margin-top:30px;
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 30px;
 }
 
-.posts-grid img{
-    width:100%;
-    height:260px;
-    object-fit:cover;
-    border-radius:6px;
-    transition:0.3s;
+.posts-grid img {
+    width: 100%;
+    height: auto; /* changed from fixed 260px */
+    object-fit: cover;
+    border-radius: 6px;
+    transition: 0.3s;
 }
 
-.posts-grid img:hover{
-    transform:scale(1.03);
+.posts-grid img:hover {
+    transform: scale(1.03);
+}
+
+/* Profile image responsiveness */
+.profile-info img {
+    max-width: 120px;
+    width: 100%;
+    border-radius: 50%;
+}
+
+/* Center the card */
+.profile-section .card {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 450px; /* keep max width */
+    box-sizing: border-box;
+}
+
+/* Page-specific fixes to avoid header/layout shift and create Instagram-like profile */
+html {
+    /* Reserve scrollbar space to avoid horizontal shifting when scrollbar appears */
+    scrollbar-gutter: stable;
+}
+
+.profile-section .container {
+    max-width: 1000px; /* narrower than site container to keep header centered */
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.profile-section {
+    padding: 40px 0 60px 0;
+}
+
+/* Make the profile card visually centered and slightly larger */
+.profile-section .card {
+    max-width: 600px;
+    padding: 36px 28px;
+    margin-top: 24px;
+}
+
+.profile-info img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    margin: 8px auto 18px auto;
+}
+
+/* Posts grid: center the grid and allow left/middle alignment */
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+    justify-content: center; /* center the whole grid */
+    max-width: 1000px;
+    margin: 30px auto 80px auto;
+    padding: 0 10px;
+}
+
+.posts-grid img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Smaller screens adjustments */
+@media (max-width: 768px) {
+    .profile-section .card {
+        padding: 22px;
+        max-width: 92%;
+    }
+    .posts-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+        margin: 20px auto 60px auto;
+    }
 }
 </style>
 {% endblock %}
@@ -30,10 +108,10 @@
 
 {% block content %}
 <section class="profile-section">
-<div class="container">
+<div class="container" >
 
 <!-- PROFILE CARD -->
-<div class="card" style="max-width:450px;margin:auto;">
+<div class="card">
 <h2 class="card-header">{{ user.username }}'s Profile</h2>
 
 <div class="profile-info" style="text-align:center;">
