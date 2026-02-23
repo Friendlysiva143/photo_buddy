@@ -47,13 +47,37 @@ def match_requests(request):
         "sent": sent,
     })
 
+from django.db.models import Q
+
 @login_required
 def accept_request(request, req_id):
-    req = get_object_or_404(MatchRequest, id=req_id, receiver=request.user)
+
+    req = get_object_or_404(
+        MatchRequest,
+        id=req_id,
+        receiver=request.user
+    )
+
     req.status = "accepted"
     req.save()
-    Match.objects.create(user1=req.sender, user2=req.receiver)
-    room = ChatRoom.objects.create(user1=req.sender, user2=req.receiver)
+
+    Match.objects.get_or_create(
+        user1=req.sender,
+        user2=req.receiver
+    )
+
+    # FIX: prevent duplicate room creation
+    room = ChatRoom.objects.filter(
+        Q(user1=req.sender, user2=req.receiver) |
+        Q(user1=req.receiver, user2=req.sender)
+    ).first()
+
+    if not room:
+        room = ChatRoom.objects.create(
+            user1=req.sender,
+            user2=req.receiver
+        )
+
     return redirect("chat_room", room_id=room.id)
 
 @login_required

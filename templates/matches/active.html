@@ -13,10 +13,10 @@
         <h2 class="section-title">🟢 Active Matches</h2>
         <h2>Your Matches</h2>
 
-        {% if matches %}
-            {% for item in matches %}
+        {% if rooms %}
+            {% for item in rooms %}
                 <div class="match-card" style="margin-bottom:10px;">
-                    <a href="{% url 'chat_room' item.match.id %}" style="text-decoration:none; color:#333;">
+                    <a href="{% url 'chat_room' item.room.id %}" style="text-decoration:none; color:#333;">
                         <strong>{{ item.other_user.username }}</strong>
                     </a>
                 </div>
@@ -27,3 +27,6 @@
     </div>
 </section>
 {% endblock %}
+
+
+
