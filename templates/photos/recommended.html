@@ -1,6 +1,7 @@
+{% extends 'base.html' %}
+{% block content %}
 <h2>Recommended for You</h2>
 <div class="posts-grid">
-  <!--
 {% if posts %}
 
   {% for post in posts %}
@@ -11,8 +12,8 @@
     </div>
   {% endfor %}
   {% else %}
-<p>No recommendations available yet. Check back later!</p>
-{% endif %}-->
+<h2>No recommendations available yet. Check back later!</h2>
+{% endif %}
 </div>
 
 <style>
@@ -32,3 +33,4 @@
     height: auto;
 }
 </style>
+{% endblock %}
