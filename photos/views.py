@@ -235,14 +235,15 @@ def tag_posts(request, tag):
         'page_obj': posts
     })
 
-from .recommendation import collaborative_recommend
+#from .recommendation import collaborative_recommend
 
 def recommended_posts_view(request):
-    if request.user.is_authenticated:
+    """if request.user.is_authenticated:
         recommended_ids = collaborative_recommend(request.user.id, top_n=10)
         posts = Post.objects.filter(id__in=recommended_ids)
     else:
         # fallback for anonymous users → popular posts
         posts = Post.objects.all().order_by('-created_at')[:10]
 
-    return render(request, 'photos/recommended.html', {'posts': posts})
+    return render(request, 'photos/recommended.html', {'posts': posts})"""
+    return render(request, 'photos/recommended.html', {'posts': []})
