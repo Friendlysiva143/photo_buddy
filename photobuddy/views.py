@@ -87,4 +87,7 @@ def settings_page(request):
     }
     return render(request, 'auth/settings.html', context)
 
+from django.http import HttpResponse
+def ping(request):
+    return HttpResponse("This is the ping page.")
 

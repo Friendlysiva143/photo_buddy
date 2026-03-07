@@ -19,7 +19,7 @@ from django.urls import path,include
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static 
-from .views import about,safety,terms,privacy,home,settings_page
+from .views import about, ping,safety,terms,privacy,home,settings_page
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -48,6 +48,7 @@ urlpatterns = [
     path('settings/', settings_page, name='settings'),
     # posts
     path("photos/", include(('photos.urls', 'posts'), namespace='posts')),
+    path('ping/', ping, name='ping')
 
 
 ]
