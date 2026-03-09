@@ -54,13 +54,15 @@
                         <img src="{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}"
                             alt="Profile Picture" class="avatar">
                          </a>
-                         <a href="{% url 'profile' %}"  class="nav-link"><span>{{ request.user.username }}</span></a>
+                         <a href="{% url 'profile' %}"  class="nav-link">
+                            <span>{{ request.user.username }}</span>
+                        </a>
                     </div>
                 {% else %}
                     <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
                     <a href="{% url 'register' %}" class="btn btn-primary" style="margin-left:10px;">Sign Up</a>
                 {% endif %}
-            </div>
+            
 
             <!-- Mobile Menu Toggle -->
             <div class="nav-toggle-container">
@@ -75,16 +77,7 @@
                     <a href="{% url 'active_matches' %}">Active Matches</a>
                     <a href="{% url 'match_requests' %}">Match Requests</a>
                     <a href="{% url 'chat_list' %}">Chats</a>
-                    {% if request.user.is_authenticated %}
-                        <a href="{% url 'profile' %}">Profile</a>
-                        <a href="{% url 'feedback_and_logout' %}">Logout</a>
-                    {% else %}
-                        <a href="{% url 'login' %}">Login</a>
-                        <a href="{% url 'register' %}">Sign Up</a>
-                    {% endif %}
-                    {% if request.user.is_authenticated %}
-                    <a href="{% url 'settings' %}">Settings</a>
-                    {% endif %}
+                    
                 </div>
             </div>
         </div>

@@ -124,8 +124,8 @@ DATABASES = {
         "HOST": "localhost",
         "PORT": "5432",
     }
-}
-"""
+}"""
+
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 

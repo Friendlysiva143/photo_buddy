@@ -1,25 +1,26 @@
+// Mobile Navigation Toggle
+
 const navToggle = document.getElementById("navToggle");
-const dropdown = document.getElementById("dropdownMenu");
+const dropdownMenu = document.getElementById("dropdownMenu");
 
-// Show menu on hover
-navToggle.addEventListener("mouseenter", () => {
-    dropdown.style.display = "flex";
+// Toggle menu when hamburger is clicked
+navToggle.addEventListener("click", function (event) {
+    
+    event.stopPropagation(); // prevent document click from firing
+
+    if (dropdownMenu.style.display === "flex") {
+        dropdownMenu.style.display = "none";
+    } else {
+        dropdownMenu.style.display = "flex";
+    }
+
 });
 
-// Also keep it open while mouse is inside menu
-dropdown.addEventListener("mouseenter", () => {
-    dropdown.style.display = "flex";
-});
+// Close menu when clicking outside
+document.addEventListener("click", function (event) {
 
-// Hide when mouse leaves both
-navToggle.addEventListener("mouseleave", () => {
-    setTimeout(() => {
-        if (!dropdown.matches(':hover')) {
-            dropdown.style.display = "none";
-        }
-    }, 200);
-});
+    if (!navToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+        dropdownMenu.style.display = "none";
+    }
 
-dropdown.addEventListener("mouseleave", () => {
-    dropdown.style.display = "none";
 });
