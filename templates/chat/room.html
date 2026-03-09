@@ -64,7 +64,14 @@ content+="<b>"+m.sender+":</b> "+m.text;
 }
 
 if(m.image){
-content+="<br><img src='"+m.image+"'>";
+
+content+=`
+<br>
+<a href="${m.image}" download>
+<img src="${m.image}" style="max-width:200px;border-radius:6px;margin-top:5px;cursor:pointer;">
+</a>
+`;
+
 }
 
 div.innerHTML=content;
@@ -78,7 +85,6 @@ box.scrollTop=box.scrollHeight;
 });
 
 }
-
 
 function sendMessage(){
 
