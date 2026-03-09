@@ -16,25 +16,40 @@ def room(request, room_id):
 
 @login_required
 def fetch_messages(request, room_id):
+
     room = get_object_or_404(ChatRoom, id=room_id)
-    messages = Message.objects.filter(room=room).values(
-        "sender__username",
-        "text",
-        "timestamp"
-    )
-    return JsonResponse(list(messages), safe=False)
+
+    messages = Message.objects.filter(room=room)
+
+    data = []
+
+    for m in messages:
+        data.append({
+            "sender": m.sender.username,
+            "text": m.text,
+            "image": m.image.url if m.image else None,
+            "timestamp": m.timestamp.strftime("%H:%M")
+        })
+
+    return JsonResponse(data, safe=False)
 
 @login_required
 def send_message(request, room_id):
     room = get_object_or_404(ChatRoom, id=room_id)
-    text = request.POST.get("text", "")
-    if text.strip() == "":
+
+    text = request.POST.get("text")
+    image = request.FILES.get("image")
+
+    if not text and not image:
         return JsonResponse({"error": "Empty message"}, status=400)
+
     Message.objects.create(
         room=room,
         sender=request.user,
-        text=text
+        text=text,
+        image=image
     )
+
     return JsonResponse({"status": "sent"})
 
 @login_required
