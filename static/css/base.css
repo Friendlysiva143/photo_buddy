@@ -339,9 +339,6 @@ body {
     .user-menu span {
         display: none;
     }
-    .nav-toggle-container{
-        display:block;
-    }
 }
 
 /* Dropdown menu */
@@ -398,14 +395,15 @@ body {
 /* Container for hamburger and menu */
 .nav-toggle-container{
     position: relative;
-    display: none;
 }
+
+
 /* Mobile dropdown */
 .dropdown-menu {
     position: absolute;
     top: 45px;
-    right: 0;
-    left: auto;
+    left: 0;      /* align to left of hamburger */
+    right: auto;
     width: 200px;
     background: white;
     border-radius: 8px;
