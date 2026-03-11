@@ -146,7 +146,6 @@ style="width:120px;border-radius:50%;">
 
 </div>
 
-
 <!-- USER POSTS -->
 <h3 style="text-align:center;margin-top:40px;">Posts</h3>
 
@@ -154,12 +153,22 @@ style="width:120px;border-radius:50%;">
 
 {% for post in posts %}
 
-<a href="{% url 'posts:post_detail' post.id %}">
-    <img src="{{ post.image.url }}">
+<a href="{% url 'posts:post_detail' post.id %}" class="post-card">
+
+    <img src="{{ post.image.url }}" alt="post image">
+
+    <div class="post-overlay">
+        <div class="post-stats">
+            <span>❤️ {{ post.likes.count }}</span>
+            <span>💬 {{ post.comments.count }}</span>
+        </div>
+    </div>
+
 </a>
 
 {% empty %}
 <p style="text-align:center;">No posts uploaded yet.</p>
+
 {% endfor %}
 
 </div>

@@ -1,233 +1,289 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ profile_user.username }}'s Posts - Photo Buddy{% endblock %}
+{% block title %}{{ profile_user.username }}'s Posts{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <!-- Profile Header -->
-    <div class="row mb-5">
-        <div class="col-md-8 offset-md-2">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex align-items-center gap-4">
-                        <!-- Profile Avatar 
-                        <div>
-                            <img src="https://ui-avatars.com/api/?name={{ profile_user.username }}&size=120&background=667eea&color=fff" 
-                                 alt="{{ profile_user.username }}" class="rounded-circle" width="120" height="120">
-                        </div>-->
-                         <a href="{% url 'posts:user_posts' profile_user.username %}" class="text-dark text-decoration-none">
-                                <div class="d-flex align-items-center">
-                                    {% if profile_user.profile_picture %}
-                                    <img src="{{ profile_user.profile_picture.url }}"
-                                        alt="{{ profile_user.username }}"
-                                        class="rounded-circle"
-                                        width="40"
-                                        height="40"
-                                        style="object-fit:cover;">
-                                {% else %}
-                                    <img src="https://ui-avatars.com/api/?name={{ post.user.username }}&background=667eea&color=fff"
-                                        class="rounded-circle"
-                                        width="40"
-                                        height="40">
-                                {% endif %}
 
-                            </div>
-                                     </a>
+<div class="profile-container">
 
-                        <!-- Profile Info -->
-                        <div class="flex-grow-1">
-                            <h2 class="mb-1">{{ profile_user.get_full_name|default:profile_user.username }}</h2>
-                            <p class="text-muted mb-2">@{{ profile_user.username }}</p>
-                            <p>{{ profile_user.bio|default:"No bio available." }}</p>
-                            
-                            {% if profile_user.email %}
-                                <p class="text-muted mb-2">
-                                    <i class="bi bi-envelope"></i> {{ profile_user.email }}
-                                </p>
-                            {% endif %}
-                            <div>
-                                {% if profile_user.is_cameraman %}
-                                    <span class="badge bg-success">Cameraman</span>
-                                {% endif %}
-                            </div>
+<!-- ================= PROFILE HEADER ================= -->
 
-                            <div class="mt-3">
-                                <span class="badge bg-primary me-2">
-                                    <strong>{{ posts_count }}</strong> Posts
-                                </span>
-                                
-                                <span class="badge bg-secondary">
-                                    <strong>{{ matches_count }}</strong> Matches
-                            </div>
-                        </div>
+<div class="profile-header">
 
-                        <!-- Member Since -->
-                        <div class="text-end">
-                            <small class="text-muted d-block">
-                                Joined {{ profile_user.date_joined|date:"M Y" }}
-                            </small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="profile-avatar">
 
-    <!-- Posts Grid -->
-    <div class="row mb-5">
-        <div class="col-md-8 offset-md-2">
-            {% if page_obj %}
-                <!-- Posts as Grid -->
-                <div class="row g-3 mb-4">
-                    {% for post in posts %}
-                        <div class="col-md-4">
-                            <a href="{% url 'posts:post_detail' post.id %}" class="post-thumbnail" style="text-decoration: none;">
-                                <div class="card post-grid-item shadow-sm h-100">
-                                    <div class="position-relative">
-                                        <img src="{{ post.image.url }}" alt="Post" class="card-img-top" style="height: 250px; object-fit: cover;">
-                                        <div class="post-overlay d-flex align-items-center justify-content-center">
-                                            <div class="text-white text-center">
-                                                <div class="mb-2">
-                                                    <i class="bi bi-heart-fill"></i> {{ post.likes_count }}
-                                                </div>
-                                                <div>
-                                                    <i class="bi bi-chat-fill"></i> {{ post.comments_count }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {% if post.caption %}
-                                        <div class="card-body py-2">
-                                            <p class="card-text text-truncate small">{{ post.caption }}</p>
-                                        </div>
-                                    {% endif %}
-                                    <div class="card-footer bg-light">
-                                        <small class="text-muted">
-                                            {{ post.created_at|date:"M d, Y" }}
-                                        </small>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    {% endfor %}
-                </div>
+{% if profile_user.profile_picture %}
+<img src="{{ profile_user.profile_picture.url }}">
+{% else %}
+<img src="https://ui-avatars.com/api/?name={{ profile_user.username }}&background=667eea&color=fff">
+{% endif %}
 
-                <!-- Pagination -->
-                {% if page_obj.has_other_pages %}
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            {% if page_obj.has_previous %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page=1">First</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                                </li>
-                            {% endif %}
-
-                            {% for num in page_obj.paginator.page_range %}
-                                {% if page_obj.number == num %}
-                                    <li class="page-item active">
-                                        <span class="page-link">{{ num }}</span>
-                                    </li>
-                                {% else %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                                    </li>
-                                {% endif %}
-                            {% endfor %}
-
-                            {% if page_obj.has_next %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </nav>
-                {% endif %}
-            {% else %}
-                <!-- No Posts Message -->
-                <div class="alert alert-info text-center" role="alert">
-                    <i class="bi bi-info-circle"></i> 
-                    {% if request.user == profile_user %}
-                        You haven't posted anything yet. <a href="{% url 'posts:create_post' %}">Create your first post!</a>
-                    {% else %}
-                        {{ profile_user.username }} hasn't posted anything yet.
-                    {% endif %}
-                </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- Back Button -->
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <a href="{% url 'posts:posts_feed' %}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Back to Feed
-            </a>
-        </div>
-    </div>
 </div>
 
+<div class="profile-info">
+
+<h2>{{ profile_user.username }}</h2>
+
+<div class="profile-stats">
+
+<span><strong>{{ posts_count }}</strong> posts</span>
+
+<span><strong>{{ matches_count }}</strong> matches</span>
+
+</div>
+
+<p class="profile-bio">
+{{ profile_user.bio|default:"Travel lover 📷" }}
+</p>
+
+</div>
+
+</div>
+
+
+<!-- ================= POSTS GRID ================= -->
+
+<div class="posts-grid">
+
+{% for post in posts %}
+
+<a href="{% url 'posts:post_detail' post.id %}" class="post-item">
+
+<img src="{{ post.image.url }}" alt="post">
+
+<div class="post-hover">
+
+<div>
+<i class="fas fa-heart"></i> {{ post.likes_count }}
+</div>
+
+<div>
+<i class="fas fa-comment"></i> {{ post.comments_count }}
+</div>
+
+</div>
+
+</a>
+
+{% empty %}
+
+<div class="no-posts">
+
+<p>No posts yet</p>
+
+{% if request.user == profile_user %}
+<a href="{% url 'posts:create_post' %}" class="create-post-btn">
+Create your first post
+</a>
+{% endif %}
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+
 <style>
-.post-grid-item {
-    border: none;
-    border-radius: 12px;
-    overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.2s;
+
+/* ================= PROFILE ================= */
+
+.profile-container{
+
+max-width:900px;
+margin:auto;
+padding-top:20px;
+
 }
 
-.post-grid-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+.profile-header{
+
+display:flex;
+align-items:center;
+gap:40px;
+
+padding:30px 0;
+
+border-bottom:1px solid #e5e7eb;
+
 }
 
-.post-thumbnail {
-    transition: all 0.2s;
+.profile-avatar img{
+
+width:120px;
+height:120px;
+
+border-radius:50%;
+object-fit:cover;
+
 }
 
-.post-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    opacity: 0;
-    transition: opacity 0.2s;
+.profile-info h2{
+
+margin-bottom:10px;
+
 }
 
-.post-grid-item:hover .post-overlay {
-    opacity: 1;
+.profile-stats{
+
+display:flex;
+gap:25px;
+
+margin-bottom:10px;
+
+font-size:16px;
+
 }
 
-.post-overlay i {
-    font-size: 20px;
-    margin: 0 5px;
+.profile-bio{
+
+color:#555;
+
 }
 
-.badge {
-    font-size: 14px;
-    padding: 8px 12px;
-    border-radius: 20px;
+
+/* ================= POSTS GRID ================= */
+
+.posts-grid{
+
+display:grid;
+
+grid-template-columns:repeat(3,1fr);
+
+gap:6px;
+
+margin-top:20px;
+
 }
 
-.card {
-    border: none;
-    border-radius: 12px;
+.post-item{
+
+position:relative;
+
+display:block;
+
+aspect-ratio:1/1;
+
+overflow:hidden;
+
 }
 
-.card-body {
-    padding: 12px;
+.post-item img{
+
+width:100%;
+height:100%;
+
+object-fit:cover;
+
+transition:transform .3s;
+
 }
 
-.card-footer {
-    border-top: 1px solid #e0e0e0;
-    padding: 8px 12px;
+.post-item:hover img{
+
+transform:scale(1.05);
+
 }
+
+
+/* ================= HOVER ================= */
+
+.post-hover{
+
+position:absolute;
+
+top:0;
+left:0;
+right:0;
+bottom:0;
+
+background:rgba(0,0,0,0.45);
+
+display:flex;
+
+justify-content:center;
+align-items:center;
+
+gap:30px;
+
+color:white;
+
+font-weight:600;
+
+opacity:0;
+
+transition:opacity .2s;
+
+}
+
+.post-item:hover .post-hover{
+
+opacity:1;
+
+}
+
+.post-hover i{
+
+margin-right:6px;
+
+}
+
+
+/* ================= NO POSTS ================= */
+
+.no-posts{
+
+grid-column:1/4;
+
+text-align:center;
+
+padding:60px 0;
+
+}
+
+.create-post-btn{
+
+display:inline-block;
+
+margin-top:10px;
+
+padding:10px 18px;
+
+background:#2563eb;
+
+color:white;
+
+border-radius:8px;
+
+text-decoration:none;
+
+}
+
+
+/* ================= MOBILE ================= */
+
+@media(max-width:768px){
+
+.posts-grid{
+
+grid-template-columns:repeat(3,1fr);
+
+gap:3px;
+
+}
+
+.profile-header{
+
+flex-direction:column;
+align-items:flex-start;
+
+}
+
+}
+
 </style>
+
 {% endblock %}

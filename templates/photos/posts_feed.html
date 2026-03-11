@@ -2,259 +2,298 @@
 {% load static %}
 {% load post_extras %}
 
-{% block title %}Posts Feed - Photo Buddy{% endblock %}
+{% block title %}Posts Feed{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <!-- Header with Create Button -->
-    <div class="row mb-4">
-        <div class="col-md-8 offset-md-2">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="mb-0">📸 Posts Feed</h1>
-                <a href="{% url 'posts:create_post' %}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> New Post
-                </a>
-            </div>
-        </div>
-    </div>
 
-    <!-- Posts Grid -->
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            {% if page_obj %}
-                {% for post in posts %}
-                    <!-- Post Card -->
-                    <div class="card mb-4 post-card shadow-sm">
-                        <!-- Post Header -->
-                        <div class="card-header bg-white border-bottom">
-                            <div class="d-flex justify-content-between align-items-center">
-                                 <a href="{% url 'posts:user_posts' post.user.username %}" class="text-dark text-decoration-none">
-                                <div class="d-flex align-items-center">
-                                    {% if post.user.profile_picture %}
-                                    <img src="{{ post.user.profile_picture.url }}"
-                                        alt="{{ post.user.username }}"
-                                        class="rounded-circle"
-                                        width="40"
-                                        height="40"
-                                        style="object-fit:cover;">
-                                {% else %}
-                                    <img src="https://ui-avatars.com/api/?name={{ post.user.username }}&background=667eea&color=fff"
-                                        class="rounded-circle"
-                                        width="40"
-                                        height="40">
-                                {% endif %}
+<div class="feed-container">
 
-                                    <div class="ms-3">
-                                        <h6 class="mb-0">
-                                           
-                                                <strong>{{ post.user.get_full_name|default:post.user.username }}</strong>
-                                           
-                                        </h6>
-                                     
-                                    </div>
-                                     </a>
-                                </div>
-                                
-                                <!-- Edit/Delete Options -->
-                                {% if request.user == post.user %}
-                                    <div class="dropdown">
-                                        <button class="btn btn-sm btn-link" data-bs-toggle="dropdown">
-                                            <i class="bi bi-three-dots-vertical"></i>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a class="dropdown-item" href="{% url 'posts:edit_post' post.id %}">
-                                                    <i class="bi bi-pencil"></i> Edit
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <form method="POST" action="{% url 'posts:delete_post' post.id %}" style="display:inline;">
-                                                    {% csrf_token %}
-                                                    <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Delete this post?');">
-                                                        <i class="bi bi-trash"></i> Delete
-                                                    </button>
-                                                </form>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
+<!-- Feed Header -->
+<div class="feed-header">
 
-                        <!-- Post Image -->
-                        <div class="post-image-container">
-                            <img src="{{ post.image.url }}" alt="Post by {{ post.user.username }}" 
-                                 class="card-img-top" style="height: 500px; object-fit: cover;">
-                        </div>
+<h2>📸 Photo Buddy Feed</h2>
 
-                        <!-- Post Body -->
-                        <div class="card-body">
-                               <small class="text-muted">
-                                            {{ post.created_at|date:"M d, Y \a\t g:i A" }}
-                                </small>
-                            <!-- Likes and Comments Count -->
-                            <div class="d-flex justify-content-between mb-3">
-                                <div>
-                                    <span class="text-muted">
-                                        <strong>{{ post.likes_count }}</strong> {% if post.likes_count == 1 %}like{% else %}likes{% endif %}
-                                    </span>
-                                </div>
-                                <div>
-                                    <span class="text-muted">
-                                        <strong>{{ post.comments_count }}</strong> {% if post.comments_count == 1 %}comment{% else %}comments{% endif %}
-                                    </span>
-                                </div>
-                            </div>
+<a href="{% url 'posts:create_post' %}" class="create-post-btn">
+<i class="fas fa-plus"></i> Create
+</a>
 
-                            <!-- Caption -->
-                            {% if post.caption %}
-                                <p class="card-text mb-3">
-                                    <strong>{{ post.user.username }}</strong>
-                                    {{ post.caption|format_caption|safe }}
-                                </p>
-
-                            {% endif %}
-
-                            <!-- Like Button -->
-                            <form method="POST" action="{% url 'posts:toggle_like' post.id %}" class="d-inline like-form">
-                                {% csrf_token %}
-                                {% if post.is_liked_by|add:request.user %}
-                                    <button type="submit" class="btn btn-sm btn-link text-danger like-btn" data-post-id="{{ post.id }}">
-                                        <i class="bi bi-heart-fill"></i> Unlike
-                                    </button>
-                                {% else %}
-                                    <button type="submit" class="btn btn-sm btn-link text-dark like-btn" data-post-id="{{ post.id }}">
-                                        <i class="bi bi-heart"></i> Like
-                                    </button>
-                                {% endif %}
-                            </form>
-
-                            <a href="{% url 'posts:post_detail' post.id %}" class="btn btn-sm btn-link text-dark ms-2">
-                                <i class="bi bi-chat"></i> Comment
-                            </a>
-                        </div>
-                    </div>
-                {% endfor %}
-
-                <!-- Pagination -->
-                {% if page_obj.has_other_pages %}
-                    <nav aria-label="Page navigation" class="mt-5">
-                        <ul class="pagination justify-content-center">
-                            {% if page_obj.has_previous %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page=1">First</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                                </li>
-                            {% endif %}
-
-                            {% for num in page_obj.paginator.page_range %}
-                                {% if page_obj.number == num %}
-                                    <li class="page-item active">
-                                        <span class="page-link">{{ num }}</span>
-                                    </li>
-                                {% else %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                                    </li>
-                                {% endif %}
-                            {% endfor %}
-
-                            {% if page_obj.has_next %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </nav>
-                {% endif %}
-            {% else %}
-                <!-- No Posts Message -->
-                <div class="alert alert-info text-center" role="alert">
-                    <i class="bi bi-info-circle"></i> No posts yet. <a href="{% url 'posts:create_post' %}">Create one!</a>
-                </div>
-            {% endif %}
-        </div>
-    </div>
 </div>
 
+
+{% for post in posts %}
+
+<div class="post">
+
+<!-- ================= POST HEADER ================= -->
+
+<div class="post-header">
+
+<a href="{% url 'posts:user_posts' post.user.username %}" class="user-info">
+
+{% if post.user.profile_picture %}
+<img src="{{ post.user.profile_picture.url }}">
+{% else %}
+<img src="https://ui-avatars.com/api/?name={{ post.user.username }}">
+{% endif %}
+
+<span>{{ post.user.username }}</span>
+
+</a>
+
+{% if request.user == post.user %}
+<div class="post-options">
+<a href="{% url 'posts:edit_post' post.id %}">Edit</a>
+</div>
+{% endif %}
+
+</div>
+
+
+<!-- ================= POST IMAGE ================= -->
+
+<div class="post-image">
+
+<img src="{{ post.image.url }}" alt="post">
+
+</div>
+
+
+<!-- ================= POST ACTIONS ================= -->
+
+<div class="post-actions">
+
+<form method="POST" action="{% url 'posts:toggle_like' post.id %}" class="like-form">
+{% csrf_token %}
+
+{% if post.is_liked_by|add:request.user %}
+<button class="action-btn liked">
+<i class="fas fa-heart"></i>
+</button>
+{% else %}
+<button class="action-btn">
+<i class="far fa-heart"></i>
+</button>
+{% endif %}
+
+</form>
+
+<a href="{% url 'posts:post_detail' post.id %}" class="action-btn">
+<i class="far fa-comment"></i>
+</a>
+
+</div>
+
+
+<!-- ================= POST DETAILS ================= -->
+
+<div class="post-details">
+
+<div class="likes">
+<strong>{{ post.likes_count }} likes</strong>
+</div>
+
+{% if post.caption %}
+<div class="caption">
+<strong>{{ post.user.username }}</strong>
+{{ post.caption|format_caption|safe }}
+</div>
+{% endif %}
+
+<div class="post-time">
+{{ post.created_at|timesince }} ago
+</div>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<div class="no-posts">
+<p>No posts yet</p>
+<a href="{% url 'posts:create_post' %}">Create the first post</a>
+</div>
+
+{% endfor %}
+
+</div>
+
+
+
 <style>
-.post-card {
-    border: none;
-    border-radius: 12px;
-    overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.2s;
+
+/* ================= FEED ================= */
+
+.feed-container{
+
+max-width:600px;
+margin:auto;
+padding-top:20px;
+
 }
 
-.post-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+.feed-header{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+margin-bottom:20px;
+
 }
 
-.post-image-container {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-    background: #f5f5f5;
+.create-post-btn{
+
+background:#2563eb;
+color:white;
+
+padding:8px 14px;
+
+border-radius:8px;
+
+text-decoration:none;
+
 }
 
-.card-header {
-    padding: 12px 16px;
+
+/* ================= POST ================= */
+
+.post{
+
+background:white;
+
+border:1px solid #e5e7eb;
+
+margin-bottom:30px;
+
+border-radius:8px;
+
+overflow:hidden;
+
 }
 
-.btn-link {
-    text-decoration: none;
-    color: #495057;
-    padding: 0 8px;
+
+/* ================= HEADER ================= */
+
+.post-header{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+padding:12px;
+
 }
 
-.btn-link:hover {
-    color: #667eea;
+.user-info{
+
+display:flex;
+align-items:center;
+
+gap:10px;
+
+text-decoration:none;
+
+color:black;
+
+font-weight:600;
+
 }
 
-.like-btn {
-    transition: color 0.2s;
+.user-info img{
+
+width:35px;
+height:35px;
+
+border-radius:50%;
+
+object-fit:cover;
+
 }
 
-.like-btn:hover {
-    color: #ff6b6b !important;
+
+/* ================= IMAGE ================= */
+
+.post-image img{
+
+width:100%;
+max-height:600px;
+
+object-fit:cover;
+
 }
+
+
+/* ================= ACTIONS ================= */
+
+.post-actions{
+
+display:flex;
+
+gap:15px;
+
+padding:10px 12px;
+
+}
+
+.action-btn{
+
+background:none;
+border:none;
+
+font-size:20px;
+
+cursor:pointer;
+
+color:#333;
+
+}
+
+.action-btn.liked{
+
+color:#e63946;
+
+}
+
+
+/* ================= DETAILS ================= */
+
+.post-details{
+
+padding:0 12px 12px;
+
+}
+
+.likes{
+
+margin-bottom:6px;
+
+}
+
+.caption{
+
+margin-bottom:6px;
+
+}
+
+.post-time{
+
+font-size:12px;
+color:#777;
+
+}
+
+
+/* ================= EMPTY ================= */
+
+.no-posts{
+
+text-align:center;
+
+padding:50px;
+
+}
+
 </style>
 
-<script>
-// AJAX Like functionality (optional - makes it smooth)
-document.querySelectorAll('.like-form').forEach(form => {
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        const postId = this.querySelector('[name="post_id"]')?.value || this.action.split('/')[4];
-        
-        fetch(this.action, {
-            method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Update button style
-            const btn = this.querySelector('.like-btn');
-            if (data.liked) {
-                btn.classList.remove('text-dark');
-                btn.classList.add('text-danger');
-                btn.innerHTML = '<i class="bi bi-heart-fill"></i> Unlike';
-            } else {
-                btn.classList.remove('text-danger');
-                btn.classList.add('text-dark');
-                btn.innerHTML = '<i class="bi bi-heart"></i> Like';
-            }
-        });
-    });
-});
-</script>
 {% endblock %}

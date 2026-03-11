@@ -1,32 +1,116 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/matches.css' %}">
-{% endblock %}
-
-{% block title %}Active Matches | Photo Buddy{% endblock %}
+{% block title %}Active Matches{% endblock %}
 
 {% block content %}
-<section class="matches-section">
-    <div class="container">
-        <h2 class="section-title">🟢 Active Matches</h2>
-        <h2>Your Matches</h2>
 
-        {% if rooms %}
-            {% for item in rooms %}
-                <div class="match-card" style="margin-bottom:10px;">
-                    <a href="{% url 'chat_room' item.room.id %}" style="text-decoration:none; color:#333;">
-                        <strong>{{ item.other_user.username }}</strong>
-                    </a>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>No matches yet.</p>
-        {% endif %}
-    </div>
-</section>
+<div class="matches-container">
+
+<h2 class="page-title">Active Matches</h2>
+
+{% if rooms %}
+
+{% for item in rooms %}
+
+<a href="{% url 'chat_room' item.room.id %}" class="match-item">
+
+<div class="match-user">
+
+{% if item.other_user.profile_picture %}
+<img src="{{ item.other_user.profile_picture.url }}">
+{% else %}
+<img src="https://ui-avatars.com/api/?name={{ item.other_user.username }}">
+{% endif %}
+
+<div class="match-info">
+
+<strong>{{ item.other_user.username }}</strong>
+<span>Tap to chat</span>
+
+</div>
+
+</div>
+
+<i class="fas fa-chevron-right"></i>
+
+</a>
+
+{% endfor %}
+
+{% else %}
+
+<p class="empty-text">No matches yet</p>
+
+{% endif %}
+
+</div>
+
+<style>
+
+.matches-container{
+max-width:600px;
+margin:auto;
+padding-top:20px;
+}
+
+.page-title{
+margin-bottom:20px;
+}
+
+.match-item{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+padding:14px;
+
+border-bottom:1px solid #eee;
+
+text-decoration:none;
+color:#000;
+
+transition:background .2s;
+
+}
+
+.match-item:hover{
+background:#f7f7f7;
+}
+
+.match-user{
+
+display:flex;
+align-items:center;
+
+gap:12px;
+
+}
+
+.match-user img{
+
+width:45px;
+height:45px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+}
+
+.match-info span{
+
+font-size:13px;
+color:#666;
+
+}
+
+.empty-text{
+color:#777;
+padding:20px 0;
+}
+
+</style>
+
 {% endblock %}
-
-
-

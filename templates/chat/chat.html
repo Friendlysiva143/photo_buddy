@@ -1,28 +1,38 @@
-{% extends 'base.html' %}
-{% load static %}
+<div class="chat-container">
 
-{% block title %}Chat with {{ user_other.username }}{% endblock %}
+<div class="chat-header">
 
-{% block content %}
-<section class="chat-section">
-    <div class="container" style="max-width: 600px;">
-        <h2>Chat with <b>{{ user_other.username }}</b></h2>
-        <div style="background: #f1f5f9; padding: 1.2rem; border-radius:10px; margin-bottom:1.5rem;">
-            {% for msg in messages %}
-                <div style="margin-bottom:10px; {% if msg.from_user == user_me %}text-align:right;{% endif %}">
-                    <span><b>{{ msg.from_user.username }}:</b></span>
-                    <span>{{ msg.content }}</span>
-                    <span style="font-size:.8em;color:#64748b;">{{ msg.timestamp|date:"H:i, d M" }}</span>
-                </div>
-            {% empty %}
-                <div>No messages yet.</div>
-            {% endfor %}
-        </div>
-        <form method="post" autocomplete="off" style="display:flex;gap:10px;">
-            {% csrf_token %}
-            <input type="text" name="content" placeholder="Type a message..." class="form-input" style="flex:1;">
-            <button type="submit" class="btn btn-primary">Send</button>
-        </form>
-    </div>
-</section>
-{% endblock %}
+<img src="{{ user_other.profile_picture.url }}">
+<span>{{ user_other.username }}</span>
+
+</div>
+
+<div class="chat-messages">
+
+{% for msg in messages %}
+
+<div class="message-row {% if msg.from_user == user_me %}sent{% else %}received{% endif %}">
+
+<div class="message-bubble">
+
+{{ msg.content }}
+
+<div class="msg-time">
+{{ msg.timestamp|date:"H:i" }}
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+<form method="post" class="chat-input-bar">
+{% csrf_token %}
+<input type="text" name="content" placeholder="Message...">
+<button type="submit">Send</button>
+</form>
+
+</div>

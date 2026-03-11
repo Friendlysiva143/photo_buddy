@@ -1,130 +1,161 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Photo Buddy - Find Travel Photo Partners{% endblock %}</title>
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    {% block extra_css %}{% endblock %}
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>{% block title %}Photo Buddy{% endblock %}</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+{% block extra_css %}{% endblock %}
+
 </head>
+
+
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand">
-                <a href="{% url 'home' %}" class="nav-brand" style="text-decoration: none;">
-                    <i class="fas fa-camera"></i>
-                    <span>PHOTO BUDDY</span>
-                </a>
-            </div>
 
-            <!-- Desktop Menu -->
-            <div class="nav-menu" id="navMenu">
-                <a href="{% url 'home' %}" class="nav-link">Home</a>
-                <a href="{% url 'posts:posts_feed' %}" class="nav-link">Posts</a>
-                <a href="{% url 'posts:recommended_posts' %}"  class="nav-link">Recommended Posts</a>
-                <a href="{% url 'map' %}" class="nav-link">Find Buddies</a>
+<!-- ================= HEADER ================= -->
 
-                <div class="dropdown nav-link">
-                    <button class="dropbtn">My Matches</button>
-                    <div class="dropdown-content">
-                        <a href="{% url 'active_matches' %}">Active Matches</a>
-                        <a href="{% url 'match_requests' %}">Match Requests</a>
-                    </div>
-                </div>
+<nav class="navbar">
 
-                <a href="{% url 'chat_list' %}" class="nav-link">Chats</a>
-            </div>
+<div class="container">
 
-            <!-- Auth Actions -->
-            <div class="nav-actions">
-                {% if request.user.is_authenticated %}
-                    <div class="user-menu" style="display:flex;align-items:center;gap:10px;">
-                        <a href="{% url 'profile' %}"  class="nav-link">
-                        <img src="{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}"
-                            alt="Profile Picture" class="avatar">
-                         </a>
-                         <a href="{% url 'profile' %}"  class="nav-link">
-                            <span>{{ request.user.username }}</span>
-                        </a>
-                    </div>
-                {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
-                    <a href="{% url 'register' %}" class="btn btn-primary" style="margin-left:10px;">Sign Up</a>
-                {% endif %}
-            
+<div class="nav-brand">
 
-            <!-- Mobile Menu Toggle -->
-            <div class="nav-toggle-container">
-                <button class="nav-toggle" id="navToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="dropdown-menu" id="dropdownMenu">
-                    <a href="{% url 'home' %}">Home</a>
-                    <a href="{% url 'map' %}">Find Buddies</a>
-                    <a href="{% url 'posts:posts_feed' %}">Posts</a>
-                    <a href="{% url 'posts:recommended_posts' %}">Recommended Posts</a>
-                    <a href="{% url 'active_matches' %}">Active Matches</a>
-                    <a href="{% url 'match_requests' %}">Match Requests</a>
-                    <a href="{% url 'chat_list' %}">Chats</a>
-                    
-                </div>
-            </div>
-        </div>
-    </nav>
+<a href="{% url 'home' %}">
+<i class="fas fa-camera"></i>
+<span>PHOTO BUDDY</span>
+</a>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        {% block content %}{% endblock %}
-    </main>
+</div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content" style="display:flex;flex-wrap:wrap;justify-content:space-between;">
-                <div class="footer-section">
-                    <h3>Photo Buddy</h3>
-                    <p>Connect with fellow travelers for mutual photo assistance</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <a href="{% url 'about' %}">About</a>
-                    <a href="{% url 'home' %}#how-it-works">How It Works</a>
-                    <a href="{% url 'safety' %}">Safety Tips</a>
-                </div>
-                <div class="footer-section">
-                    <h4>Legal</h4>
-                    <a href="{% url 'terms' %}">Terms of Service</a>
-                    <a href="{% url 'privacy' %}">Privacy Policy</a>
-                </div>
-                <div class="footer-section">
-                    <h4>Connect</h4>
-                    <div class="social-links">
-                        <a href="https://www.facebook.com/siva.prasad.419683/"><i class="fab fa-facebook"></i></a>
-                        <a href="https://www.instagram.com/friendly_siva___420/"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom" style="text-align:center; margin-top: 10px;">
-                <p>&copy; 2025 Photo Buddy. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
 
-    <!-- Scripts -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="{% static 'js/main.js' %}"></script>
-    {% block extra_js %}{% endblock %}
+<div class="nav-menu">
+
+<a href="{% url 'home' %}" class="nav-link">Home</a>
+
+<a href="{% url 'posts:posts_feed' %}" class="nav-link">Posts</a>
+
+<a href="{% url 'posts:recommended_posts' %}" class="nav-link">Recommended</a>
+
+<a href="{% url 'map' %}" class="nav-link">Find Buddies</a>
+
+<div class="dropdown nav-link">
+
+<button class="dropbtn">My Matches</button>
+
+<div class="dropdown-content">
+
+<a href="{% url 'active_matches' %}">Active Matches</a>
+
+<a href="{% url 'match_requests' %}">Match Requests</a>
+
+</div>
+
+</div>
+
+<a href="{% url 'chat_list' %}" class="nav-link">Chats</a>
+
+</div>
+
+
+<div class="nav-actions">
+
+{% if request.user.is_authenticated %}
+
+<div class="user-menu">
+
+<a href="{% url 'profile' %}">
+
+<img
+src="{% if request.user.profile_picture %}
+{{ request.user.profile_picture.url }}
+{% else %}
+{% static 'images/default-avatar.png' %}
+{% endif %}"
+class="avatar">
+
+</a>
+
+<span>{{ request.user.username }}</span>
+
+</div>
+
+{% else %}
+
+<a href="{% url 'login' %}" class="btn btn-outline">Login</a>
+
+<a href="{% url 'register' %}" class="btn btn-primary">Sign Up</a>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</nav>
+
+
+<!-- ================= MAIN CONTENT ================= -->
+
+<main class="main-content">
+
+{% block content %}
+
+{% endblock %}
+
+</main>
+
+
+
+<!-- ================= MOBILE FOOTER NAV ================= -->
+
+<nav class="mobile-footer">
+
+<a href="{% url 'home' %}" class="footer-item">
+<i class="fas fa-home"></i>
+<span>Home</span>
+</a>
+
+<a href="{% url 'posts:posts_feed' %}" class="footer-item">
+<i class="fas fa-image"></i>
+<span>Posts</span>
+</a>
+
+<a href="{% url 'map' %}" class="footer-item">
+<i class="fas fa-map-marker-alt"></i>
+<span>Find</span>
+</a>
+
+<a href="{% url 'match_requests' %}" class="footer-item">
+<i class="fas fa-user-friends"></i>
+<span>Matches</span>
+</a>
+
+
+<a href="{% url 'chat_list' %}" class="footer-item">
+<i class="fas fa-comments"></i>
+<span>Chats</span>
+</a>
+
+</nav>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="{% static 'js/main.js' %}"></script>
+
+{% block extra_js %}{% endblock %}
+
 </body>
 </html>

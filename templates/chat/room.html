@@ -1,42 +1,58 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
 
-<head>
-<title>Chat Room</title>
+<link rel="stylesheet" href="{% static 'css/chat.css' %}">
 
-<style>
+<div class="chat-container">
 
-.chat-box{
-    width:80%;
-    height:400px;
-    border:1px solid #ccc;
-    overflow-y:scroll;
-    padding:10px;
-    margin-bottom:10px;
-}
+<div class="chat-header">
 
-.msg{
-    margin:8px 0;
-}
+{% if request.user == room.user1 %}
+    
+    {% if room.user2.profile_picture %}
+        <img src="{{ room.user2.profile_picture.url }}">
+    {% else %}
+        <img src="{% static 'images/default-avatar.png' %}">
+    {% endif %}
 
-.me{
-    text-align:right;
-    color:blue;
-}
+{% else %}
 
-.other{
-    text-align:left;
-    color:green;
-}
+    {% if room.user1.profile_picture %}
+        <img src="{{ room.user1.profile_picture.url }}">
+    {% else %}
+        <img src="{% static 'images/default-avatar.png' %}">
+    {% endif %}
 
-.msg img{
-    max-width:200px;
-    display:block;
-    margin-top:5px;
-    border-radius:6px;
-}
+{% endif %}
+<span>
+{% if request.user == room.user1 %}
+{{ room.user2.username }}
+{% else %}
+{{ room.user1.username }}
+{% endif %}
+</span>
 
-</style>
+</div>
+
+<div id="chat-box" class="chat-messages"></div>
+
+<div class="chat-input-bar">
+
+<input type="file" id="image" style="display:none" onchange="previewImage()">
+
+<span class="image-btn" onclick="document.getElementById('image').click()">+</span>
+
+<input type="text" id="text" placeholder="Message...">
+
+<button onclick="sendMessage()">Send</button>
+
+</div>
+
+<div id="preview"></div>
+
+</div>
 
 <script>
 
@@ -51,16 +67,18 @@ box.innerHTML="";
 
 data.forEach(m=>{
 
-let div=document.createElement("div");
-div.className="msg";
-
 let isMe=m.sender==="{{ request.user.username }}";
-div.classList.add(isMe?"me":"other");
+
+let row=document.createElement("div");
+row.className="message-row " + (isMe ? "sent" : "received");
+
+let bubble=document.createElement("div");
+bubble.className="message-bubble";
 
 let content="";
 
 if(m.text){
-content+="<b>"+m.sender+":</b> "+m.text;
+content+=m.text;
 }
 
 if(m.image){
@@ -68,15 +86,17 @@ if(m.image){
 content+=`
 <br>
 <a href="${m.image}" download>
-<img src="${m.image}" style="max-width:200px;border-radius:6px;margin-top:5px;cursor:pointer;">
+<img src="${m.image}">
 </a>
 `;
 
 }
 
-div.innerHTML=content;
+bubble.innerHTML=content;
 
-box.appendChild(div);
+row.appendChild(bubble);
+
+box.appendChild(row);
 
 });
 
@@ -122,7 +142,6 @@ loadMessages();
 
 }
 
-
 function previewImage(){
 
 let file=document.getElementById("image").files[0];
@@ -135,9 +154,6 @@ if(file){
 let img=document.createElement("img");
 
 img.src=URL.createObjectURL(file);
-img.style.maxWidth="120px";
-img.style.marginTop="5px";
-img.style.borderRadius="6px";
 
 preview.appendChild(img);
 
@@ -145,48 +161,10 @@ preview.appendChild(img);
 
 }
 
-
 setInterval(loadMessages,1000);
+
 window.onload=loadMessages;
 
 </script>
-
-</head>
-
-
-<body>
-
-<h2>
-Chat with
-{% if request.user == room.user1 %}
-{{ room.user2.username }}
-{% else %}
-{{ room.user1.username }}
-{% endif %}
-</h2>
-
-
-<div id="chat-box" class="chat-box"></div>
-
-
-<div style="display:flex;align-items:center;gap:8px">
-
-<input type="file" id="image" style="display:none" onchange="previewImage()">
-
-<button onclick="document.getElementById('image').click()" style="font-size:22px">
-+
-</button>
-
-<input type="text" id="text" placeholder="Type message..." style="flex:1">
-
-<button onclick="sendMessage()">Send</button>
-
-</div>
-
-
-<div id="preview"></div>
-
-
-</body>
 
 {% endblock %}

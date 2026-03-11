@@ -1,177 +1,315 @@
 /* static/css/auth.css */
 
-/* Root color variables */
-:root {
-    --primary: #2563eb;
-    --primary-hover: #1d4ed8;
-    --gray-bg: #f3f4f6;
-    --gray-light: #eef2ff;
-    --gray-border: #e5e7eb;
-    --text: #222;
-    --text-light: #64748b;
+:root{
+    --primary:#2563eb;
+    --primary-hover:#1d4ed8;
+    --gray-bg:#f8fafc;
+    --gray-light:#eef2ff;
+    --gray-border:#e5e7eb;
+    --text:#1f2937;
+    --text-light:#6b7280;
 }
 
-/* Body for auth pages */
+/* ===============================
+GLOBAL
+================================ */
 
-/* Scope styles only for auth pages */
-
-/* Card styles for login/register forms */
-.auth-section .card {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(55,65,81,0.1);
-    padding: 2.2rem 2rem;
-    margin: 0 auto;
-    border: none;
-    transition: box-shadow 0.2s;
+body{
+    background:var(--gray-bg);
+    font-family:'Inter', sans-serif;
+    color:var(--text);
 }
 
-.auth-section .card-header {
-    font-size: 1.6rem;
-    font-weight: 700;
-    margin-bottom: 1.1em;
-    text-align: center;
-    letter-spacing: 1.5px;
-    color: var(--primary);
+/* ===============================
+PROFILE SECTION
+================================ */
+
+.profile-section{
+    padding:50px 0;
 }
 
-/* Form group spacing */
-.auth-form .form-group {
-    margin-bottom: 1.1em;
+/* PROFILE CARD */
+
+.profile-section .card{
+    background:#fff;
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.08);
+    padding:35px;
+    transition:0.3s;
 }
 
-/* Form labels */
-.auth-form .form-label {
-    display: block;
-    font-size: 1em;
-    font-weight: 500;
-    margin-bottom: 6px;
-    color: var(--primary);
+.profile-section .card:hover{
+    box-shadow:0 14px 40px rgba(0,0,0,0.12);
 }
 
-/* Input fields */
-.auth-form .form-input,
-.auth-form input[type="email"],
-.auth-form input[type="text"],
-.auth-form input[type="password"],
-.auth-form input[type="file"],
-.auth-form textarea {
-    width: 100%;
-    padding: 0.72em 1em;
-    border-radius: 8px;
-    border: 1.5px solid var(--gray-border);
-    font-size: 1em;
-    color: #374151;
-    background: var(--gray-bg);
-    outline: none;
-    transition: border-color 0.22s, background 0.22s;
-    box-sizing: border-box;
+/* HEADER */
+
+.profile-section .card-header{
+    border:none;
+    margin-bottom:20px;
 }
 
-.auth-form .form-input:focus,
-.auth-form input[type="email"]:focus,
-.auth-form input[type="text"]:focus,
-.auth-form input[type="password"]:focus {
-    border-color: var(--primary);
-    background: var(--gray-light);
+.profile-section .card-header h2{
+    font-size:1.6rem;
+    font-weight:600;
 }
 
-/* Buttons */
-.auth-form .btn {
-    padding: 0.72em 1.35em;
-    border-radius: 8px;
-    font-size: 1em;
-    border: none;
-    cursor: pointer;
-    font-weight: 500;
-    background: var(--primary);
-    color: #fff;
-    transition: background 0.22s, color 0.22s;
-    margin-top: 0.75em;
-    display: inline-block;
+/* PROFILE IMAGE */
+
+.profile-info img{
+    width:140px;
+    height:140px;
+    object-fit:cover;
+    border-radius:50%;
+    margin:auto;
+    border:4px solid #fff;
+    box-shadow:0 6px 20px rgba(0,0,0,0.1);
 }
 
-.auth-form .btn.btn-lg {
-    width: 100%;
-    font-size: 1.08em;
+/* PROFILE TEXT */
+
+.profile-info p{
+    margin:6px 0;
+    font-size:0.95rem;
+    color:var(--text-light);
 }
 
-.auth-form .btn-outline {
-    background: #fff;
-    border: 1.4px solid var(--primary);
-    color: var(--primary);
+/* ===============================
+PROFILE STATS
+================================ */
+
+.profile-stats{
+    display:flex;
+    justify-content:center;
+    gap:35px;
+    margin:20px 0;
 }
 
-.auth-form .btn-outline:hover,
-.auth-form .btn:hover {
-    background: var(--primary-hover);
-    color: #fff;
+.profile-stats div{
+    text-align:center;
 }
 
-.auth-form .btn.btn-sm {
-    font-size: 0.93em;
-    padding: 0.5em 1em;
-    margin-top: 0;
+.profile-stats strong{
+    display:block;
+    font-size:18px;
 }
 
-/* Form foot text */
-.auth-form .form-foot {
-    margin-top: 1.15em;
-    text-align: center;
-    font-size: 1em;
-    color: var(--text-light);
+.profile-stats span{
+    font-size:13px;
+    color:var(--text-light);
 }
 
-/* Popup message */
-.auth-section .popup-message {
-    margin-bottom: 1.2em;
-    padding: 0.88em 1.05em;
-    background: var(--primary);
-    color: #fff;
-    border-radius: 10px;
-    font-size: 1.08em;
-    text-align: center;
-    box-shadow: 0 2px 14px rgba(49,88,224,0.12);
-    animation: slide-down 0.5s;
+/* ===============================
+BUTTONS
+================================ */
+
+.btn{
+    padding:10px 18px;
+    border-radius:8px;
+    font-weight:500;
+    transition:0.2s;
 }
 
-@keyframes slide-down {
-    from { opacity: 0; margin-top: -32px; }
-    to { opacity: 1; margin-top: 0; }
+.btn-outline{
+    border:1px solid var(--primary);
+    color:var(--primary);
+    background:white;
 }
 
-/* File input */
-.auth-form input[type="file"] {
-    background: none;
-    padding: 0;
+.btn-outline:hover{
+    background:var(--primary);
+    color:white;
 }
 
-/* Responsive adjustments */
-@media (max-width: 600px) {
-    .auth-section .container,
-    .auth-section .card {
-        padding: 1em;
+/* ===============================
+POSTS GRID
+================================ */
+
+.posts-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:18px;
+    max-width:1000px;
+    margin:35px auto 80px auto;
+}
+
+/* ===============================
+POST CARD
+================================ */
+
+.post-card{
+    position:relative;
+    display:block;
+    overflow:hidden;
+    border-radius:10px;
+}
+
+/* IMAGE */
+
+.post-card img{
+    width:100%;
+    height:230px;
+    object-fit:cover;
+    display:block;
+    transition:0.35s ease;
+}
+
+/* IMAGE ZOOM */
+
+.post-card:hover img{
+    transform:scale(1.08);
+}
+
+/* ===============================
+HOVER OVERLAY
+================================ */
+
+.post-overlay{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+
+    background:rgba(0,0,0,0.55);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    opacity:0;
+    transition:opacity 0.3s ease;
+
+    z-index:2;
+    pointer-events:none;
+}
+
+/* SHOW ON HOVER */
+
+.post-card:hover .post-overlay{
+    opacity:1;
+}
+
+/* ===============================
+LIKE & COMMENT COUNTS
+================================ */
+
+.post-stats{
+    color:white;
+    font-size:18px;
+    font-weight:600;
+    display:flex;
+    gap:30px;
+}
+
+.post-stats span{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+/* ===============================
+AUTH CARD
+================================ */
+
+.auth-section .card{
+    background:#fff;
+    border-radius:16px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    padding:2.4rem 2rem;
+    border:none;
+}
+
+.auth-section .card-header{
+    font-size:1.7rem;
+    font-weight:700;
+    margin-bottom:1.2em;
+    text-align:center;
+    color:var(--primary);
+}
+
+/* ===============================
+INPUTS
+================================ */
+
+.auth-form input,
+.auth-form textarea{
+    width:100%;
+    padding:12px 14px;
+    border-radius:8px;
+    border:1px solid var(--gray-border);
+    font-size:14px;
+    background:white;
+    transition:0.2s;
+}
+
+.auth-form input:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 2px rgba(37,99,235,0.15);
+    outline:none;
+}
+
+/* ===============================
+BUTTON
+================================ */
+
+.auth-form .btn{
+    width:100%;
+    padding:12px;
+    font-size:15px;
+}
+
+/* ===============================
+POPUP MESSAGE
+================================ */
+
+.popup-message{
+    padding:12px;
+    border-radius:10px;
+    background:var(--primary);
+    color:white;
+    text-align:center;
+    margin-bottom:15px;
+    animation:slide-down .4s;
+}
+
+@keyframes slide-down{
+    from{
+        opacity:0;
+        transform:translateY(-10px);
     }
-    .auth-section {
-        padding: 1.5em 0;
-    }
-    .auth-section .card-header {
-        font-size: 1.12rem;
+    to{
+        opacity:1;
+        transform:translateY(0);
     }
 }
 
-/* Ensure profile/auth pages don't cause horizontal overflow */
-html, body {
-    overflow-x: hidden;
+/* ===============================
+RESPONSIVE
+================================ */
+
+@media(max-width:768px){
+
+.profile-section .card{
+    padding:22px;
 }
 
-img, video {
-    max-width: 100%;
-    height: auto;
-    display: block;
+.posts-grid{
+    grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+    gap:12px;
 }
 
-.posts-grid {
-    box-sizing: border-box;
-    overflow-x: hidden;
+.profile-info img{
+    width:110px;
+    height:110px;
+}
+
+.post-card img{
+    height:180px;
+}
+
+.post-stats{
+    font-size:16px;
+}
+
 }

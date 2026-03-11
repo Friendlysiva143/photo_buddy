@@ -1,43 +1,244 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/matches.css' %}">
-{% endblock %}
-
-{% block title %}Match Requests | Photo Buddy{% endblock %}
+{% block title %}Matches | Photo Buddy{% endblock %}
 
 {% block content %}
-<section class="matches-section">
-    <div class="container">
-        <h2>Match Requests</h2>
 
-            <h3>Received Requests</h3>
-            {% for r in received %}
-                <div>
-                    <p>{{ r.sender.username }} sent you a request</p>
+<div class="matches-container">
 
-                    <a href="{% url 'accept_request' r.id %}">
-                        <button>Accept</button>
-                    </a>
+<h2 class="page-title">Matches</h2>
 
-                    <a href="{% url 'decline_request' r.id %}">
-                        <button>Decline</button>
-                    </a>
-                </div>
-                <hr>
-            {% empty %}
-                <p>No incoming requests.</p>
-            {% endfor %}
+<!-- NAV TABS -->
+<div class="match-tabs">
 
-            <h3>Sent Requests</h3>
-            {% for r in sent %}
-                <div>
-                    <p>You sent request to {{ r.receiver.username }} - Status: {{ r.status }}</p>
-                </div>
-            {% empty %}
-                <p>No sent requests.</p>
-            {% endfor %}
-    </div>
-</section>
+<a href="{% url 'match_requests' %}" class="tab active">
+Requests
+</a>
+
+<a href="{% url 'active_matches' %}" class="tab">
+Active Matches
+</a>
+
+</div>
+
+
+<!-- RECEIVED REQUESTS -->
+<h3 class="section-title">Requests for you</h3>
+
+{% for r in received %}
+
+<div class="request-item">
+
+<div class="request-user">
+
+{% if r.sender.profile_picture %}
+<img src="{{ r.sender.profile_picture.url }}">
+{% else %}
+<img src="https://ui-avatars.com/api/?name={{ r.sender.username }}">
+{% endif %}
+
+<div class="request-info">
+<strong>{{ r.sender.username }}</strong>
+<span>sent you a request</span>
+</div>
+
+</div>
+
+<div class="request-actions">
+
+<a href="{% url 'accept_request' r.id %}" class="btn-accept">
+Accept
+</a>
+
+<a href="{% url 'decline_request' r.id %}" class="btn-decline">
+Decline
+</a>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<p class="empty-text">No incoming requests</p>
+
+{% endfor %}
+
+
+
+<!-- SENT REQUESTS -->
+
+<h3 class="section-title">Sent Requests</h3>
+
+{% for r in sent %}
+
+<div class="request-item">
+
+<div class="request-user">
+
+{% if r.receiver.profile_picture %}
+<img src="{{ r.receiver.profile_picture.url }}">
+{% else %}
+<img src="https://ui-avatars.com/api/?name={{ r.receiver.username }}">
+{% endif %}
+
+<div class="request-info">
+<strong>{{ r.receiver.username }}</strong>
+<span>Status: {{ r.status }}</span>
+</div>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<p class="empty-text">No sent requests</p>
+
+{% endfor %}
+
+</div>
+
+
+<style>
+
+/* PAGE */
+
+.matches-container{
+max-width:600px;
+margin:auto;
+padding-top:20px;
+}
+
+.page-title{
+margin-bottom:20px;
+}
+
+
+/* TABS */
+
+.match-tabs{
+
+display:flex;
+border-bottom:1px solid #e5e7eb;
+margin-bottom:20px;
+
+}
+
+.tab{
+
+flex:1;
+
+text-align:center;
+
+padding:10px;
+
+text-decoration:none;
+
+color:#555;
+
+font-weight:500;
+
+}
+
+.tab.active{
+
+border-bottom:3px solid #2563eb;
+color:#2563eb;
+
+}
+
+
+/* REQUEST LIST */
+
+.section-title{
+margin:20px 0 10px;
+font-size:18px;
+}
+
+.request-item{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+padding:12px;
+
+border-bottom:1px solid #eee;
+
+}
+
+.request-user{
+
+display:flex;
+align-items:center;
+
+gap:12px;
+
+}
+
+.request-user img{
+
+width:40px;
+height:40px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+}
+
+.request-info span{
+
+font-size:13px;
+color:#666;
+
+}
+
+
+/* BUTTONS */
+
+.request-actions{
+display:flex;
+gap:8px;
+}
+
+.btn-accept{
+
+background:#2563eb;
+color:white;
+
+padding:6px 14px;
+
+border-radius:6px;
+
+text-decoration:none;
+
+font-size:14px;
+
+}
+
+.btn-decline{
+
+background:#eee;
+color:#333;
+
+padding:6px 14px;
+
+border-radius:6px;
+
+text-decoration:none;
+
+font-size:14px;
+
+}
+
+.empty-text{
+color:#777;
+padding:20px 0;
+}
+
+</style>
+
 {% endblock %}

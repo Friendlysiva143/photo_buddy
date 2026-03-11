@@ -4,54 +4,220 @@
 {% block title %}Edit Post{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-6 offset-md-3">
 
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h4>Edit Post</h4>
-                </div>
+<div class="edit-post-container">
 
-                <div class="card-body">
+<div class="edit-card">
 
-                    <!-- Current Image -->
-                    <div class="text-center mb-3">
-                        <img src="{{ post.image.url }}" 
-                             style="width:100%; max-height:350px; object-fit:cover; border-radius:10px;">
-                    </div>
+<h2 class="page-title">Edit Post</h2>
 
-                    <form method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
+<!-- IMAGE PREVIEW -->
+<div class="image-preview">
 
-                        <!-- Caption -->
-                        <div class="mb-3">
-                            <label class="form-label">Caption</label>
-                            {{ form.caption }}
-                        </div>
+<img src="{{ post.image.url }}" alt="post image">
 
-                        <!-- Style -->
-                        <div class="mb-3">
-                            <label class="form-label">Style</label>
-                            {{ form.style }}
-                        </div>
-
-                        <!-- Image (Optional)
-                        <div class="mb-3">
-                            <label class="form-label">Change Image (Optional)</label>
-                            {{ form.image }}
-                        </div> -->
-
-                        <button type="submit" class="btn btn-primary w-100">
-                            Update Post
-                        </button>
-
-                    </form>
-
-                </div>
-            </div>
-
-        </div>
-    </div>
 </div>
+
+<form method="POST" enctype="multipart/form-data" class="edit-form">
+
+{% csrf_token %}
+
+<!-- CAPTION -->
+
+<div class="form-group">
+
+<label>Caption</label>
+
+{{ form.caption }}
+
+</div>
+
+<!-- STYLE -->
+
+<div class="form-group">
+
+<label>Photography Style</label>
+
+{{ form.style }}
+
+</div>
+
+<!-- ACTION BUTTONS -->
+
+<div class="form-actions">
+
+<button type="submit" class="btn-update">
+Update Post
+</button>
+
+<a href="{% url 'posts:post_detail' post.id %}" class="btn-cancel">
+Cancel
+</a>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+
+<style>
+
+/* PAGE */
+
+.edit-post-container{
+
+max-width:600px;
+margin:auto;
+padding-top:30px;
+
+}
+
+
+/* CARD */
+
+.edit-card{
+
+background:white;
+
+padding:25px;
+
+border-radius:12px;
+
+box-shadow:0 5px 20px rgba(0,0,0,0.08);
+
+}
+
+
+/* TITLE */
+
+.page-title{
+
+margin-bottom:20px;
+
+font-size:22px;
+
+font-weight:600;
+
+}
+
+
+/* IMAGE */
+
+.image-preview{
+
+margin-bottom:20px;
+
+}
+
+.image-preview img{
+
+width:100%;
+
+max-height:400px;
+
+object-fit:cover;
+
+border-radius:10px;
+
+}
+
+
+/* FORM */
+
+.form-group{
+
+margin-bottom:18px;
+
+display:flex;
+
+flex-direction:column;
+
+}
+
+.form-group label{
+
+font-weight:500;
+
+margin-bottom:6px;
+
+color:#444;
+
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select{
+
+padding:10px;
+
+border:1px solid #ddd;
+
+border-radius:8px;
+
+font-size:14px;
+
+}
+
+
+/* BUTTONS */
+
+.form-actions{
+
+display:flex;
+
+gap:10px;
+
+margin-top:10px;
+
+}
+
+.btn-update{
+
+flex:1;
+
+background:#2563eb;
+
+color:white;
+
+border:none;
+
+padding:10px;
+
+border-radius:8px;
+
+font-size:15px;
+
+cursor:pointer;
+
+}
+
+.btn-update:hover{
+
+background:#1d4ed8;
+
+}
+
+.btn-cancel{
+
+flex:1;
+
+text-align:center;
+
+padding:10px;
+
+border-radius:8px;
+
+background:#f3f4f6;
+
+color:#333;
+
+text-decoration:none;
+
+}
+
+</style>
+
 {% endblock %}
