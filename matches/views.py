@@ -49,9 +49,10 @@ def match_requests(request):
 
 from django.db.models import Q
 
+from django.db.models import Q
+
 @login_required
 def accept_request(request, req_id):
-
     req = get_object_or_404(
         MatchRequest,
         id=req_id,
@@ -61,25 +62,24 @@ def accept_request(request, req_id):
     req.status = "accepted"
     req.save()
 
+    u1, u2 = sorted([req.sender, req.receiver], key=lambda u: u.id)
+
     Match.objects.get_or_create(
-        user1=req.sender,
-        user2=req.receiver
+        user1=u1,
+        user2=u2
     )
 
-    # FIX: prevent duplicate room creation
     room = ChatRoom.objects.filter(
-        Q(user1=req.sender, user2=req.receiver) |
-        Q(user1=req.receiver, user2=req.sender)
+        Q(user1=u1, user2=u2) | Q(user1=u2, user2=u1)
     ).first()
 
     if not room:
         room = ChatRoom.objects.create(
-            user1=req.sender,
-            user2=req.receiver
+            user1=u1,
+            user2=u2
         )
 
-    return redirect("chat_room", room_id=room.id)
-
+    return redirect("chat:chat_room", room_id=room.id)
 @login_required
 def decline_request(request, req_id):
     req = get_object_or_404(MatchRequest, id=req_id, receiver=request.user)
