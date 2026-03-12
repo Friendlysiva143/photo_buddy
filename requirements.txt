@@ -53,4 +53,4 @@ urllib3==2.5.0
 whitenoise==6.11.0
 setuptools>=70.0.0
 wheel>=0.43.0
-
+agora_token_builder
