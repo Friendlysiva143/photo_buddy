@@ -7,110 +7,122 @@
 
 <div class="matches-container">
 
-<h2 class="page-title">Active Matches</h2>
+    <h2 class="page-title">Active Matches</h2>
 
-{% if rooms %}
+    {% if matches %}
 
-{% for item in rooms %}
+        {% for item in matches %}
 
-<a href="{% url 'chat_room' item.room.id %}" class="match-item">
+        <div class="match-item">
 
-<div class="match-user">
+            <a href="{% url 'room' item.room.id %}" class="match-link">
+                <div class="match-user">
 
-{% if item.other_user.profile_picture %}
-<img src="{{ item.other_user.profile_picture.url }}">
-{% else %}
-<img src="https://ui-avatars.com/api/?name={{ item.other_user.username }}">
-{% endif %}
+                    {% if item.other_user.profile_picture %}
+                        <img src="{{ item.other_user.profile_picture.url }}" alt="{{ item.other_user.username }}">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ item.other_user.username }}" alt="{{ item.other_user.username }}">
+                    {% endif %}
 
-<div class="match-info">
+                    <div class="match-info">
+                        <strong>{{ item.other_user.username }}</strong>
+                        <span>Tap to chat</span>
+                    </div>
+                </div>
 
-<strong>{{ item.other_user.username }}</strong>
-<span>Tap to chat</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
 
-</div>
+            <a href="{% url 'remove_match' item.match.id %}"
+               class="remove-btn"
+               onclick="return confirm('Are you sure you want to remove this match and delete the chat?');">
+                Remove
+            </a>
 
-</div>
+        </div>
 
-<i class="fas fa-chevron-right"></i>
+        {% endfor %}
 
-</a>
+    {% else %}
 
-{% endfor %}
+        <p class="empty-text">No matches yet</p>
 
-{% else %}
-
-<p class="empty-text">No matches yet</p>
-
-{% endif %}
+    {% endif %}
 
 </div>
 
 <style>
-
 .matches-container{
-max-width:600px;
-margin:auto;
-padding-top:20px;
+    max-width:600px;
+    margin:auto;
+    padding-top:20px;
 }
 
 .page-title{
-margin-bottom:20px;
+    margin-bottom:20px;
 }
 
 .match-item{
-
-display:flex;
-justify-content:space-between;
-align-items:center;
-
-padding:14px;
-
-border-bottom:1px solid #eee;
-
-text-decoration:none;
-color:#000;
-
-transition:background .2s;
-
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    padding:14px;
+    border-bottom:1px solid #eee;
 }
 
-.match-item:hover{
-background:#f7f7f7;
+.match-link{
+    flex:1;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    text-decoration:none;
+    color:#000;
+    transition:background .2s;
+    padding:8px;
+    border-radius:8px;
+}
+
+.match-link:hover{
+    background:#f7f7f7;
 }
 
 .match-user{
-
-display:flex;
-align-items:center;
-
-gap:12px;
-
+    display:flex;
+    align-items:center;
+    gap:12px;
 }
 
 .match-user img{
-
-width:45px;
-height:45px;
-
-border-radius:50%;
-
-object-fit:cover;
-
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    object-fit:cover;
 }
 
 .match-info span{
+    font-size:13px;
+    color:#666;
+}
 
-font-size:13px;
-color:#666;
+.remove-btn{
+    background:#ef4444;
+    color:#fff;
+    padding:7px 12px;
+    border-radius:6px;
+    text-decoration:none;
+    font-size:14px;
+    white-space:nowrap;
+}
 
+.remove-btn:hover{
+    background:#dc2626;
 }
 
 .empty-text{
-color:#777;
-padding:20px 0;
+    color:#777;
+    padding:20px 0;
 }
-
 </style>
 
 {% endblock %}

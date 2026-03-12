@@ -1,14 +1,14 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.conf import settings
 import time
 
 from agora_token_builder import RtcTokenBuilder
 
 from .models import Message, ChatRoom, Call
-
+User = get_user_model()
 
 def user_has_room_access(user, room):
     return user == room.user1 or user == room.user2
