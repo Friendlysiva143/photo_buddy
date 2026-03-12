@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block title %}My Chats{% endblock %}
 
@@ -11,7 +10,7 @@
         <ul class="chat-room-list" style="list-style: none; padding: 0;">
             {% for item in rooms %}
                 <li style="margin-bottom: 10px;">
-                    <a href="{% url 'chat_room' item.room.id %}" style="text-decoration:none; color:#333; display:block; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                    <a href="{% url 'room' item.room.id %}" style="text-decoration:none; color:#333; display:block; padding:10px; border:1px solid #ccc; border-radius:5px;">
                         <strong>{{ item.other_user.username }}</strong>
                     </a>
                 </li>
