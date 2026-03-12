@@ -4,231 +4,485 @@
 {% block title %}Create Post - Photo Buddy{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-body">
 
-                    <h2 class="card-title mb-4">📸 Create New Post</h2>
+<div class="create-post-page">
 
-                    <form method="POST" enctype="multipart/form-data" id="postForm">
-                        {% csrf_token %}
+<div class="create-post-wrapper">
 
-                        <!-- Image Upload -->
-                        <div class="mb-3">
-                            <label for="{{ form.image.id_for_label }}" class="form-label">
-                                <strong>Upload Photo</strong>
-                            </label>
+<div class="create-post-card">
 
-                            {{ form.image }}
+<!-- HEADER -->
 
-                            {% if form.image.errors %}
-                                <div class="alert alert-danger mt-2">
-                                    {{ form.image.errors }}
-                                </div>
-                            {% endif %}
-
-                            <small class="text-muted d-block mt-2">
-                                Supported formats: JPG, PNG, GIF (Max 5MB)
-                            </small>
-                        </div>
-
-                        <!-- Image Preview -->
-                        <div class="mb-3" id="imagePreview" style="display:none;">
-                            <img id="previewImage" 
-                                 src="" 
-                                 class="img-fluid rounded"
-                                 style="max-height:300px;">
-                        </div>
-
-                        <!-- Caption -->
-                        <div class="mb-3">
-                            <label for="{{ form.caption.id_for_label }}" class="form-label">
-                                <strong>Caption</strong>
-                            </label>
-
-                            {{ form.caption }}
-
-                            <small class="text-muted d-block mt-2">
-                                <span id="charCount">0</span>/2000 characters
-                            </small>
-
-                            {% if form.caption.errors %}
-                                <div class="alert alert-danger mt-2">
-                                    {{ form.caption.errors }}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Stylish Photo Style Selector -->
-                        <div class="mb-4">
-                            <label class="form-label">
-                                <strong>Photo Style</strong>
-                            </label>
-
-                            <div class="style-grid">
-
-                                <label class="style-card">
-                                    <input type="radio" name="style" value="portrait">
-                                    <div class="style-content">📷 Portrait</div>
-                                </label>
-
-                                <label class="style-card">
-                                    <input type="radio" name="style" value="landscape">
-                                    <div class="style-content">🏞 Landscape</div>
-                                </label>
-
-                                <label class="style-card">
-                                    <input type="radio" name="style" value="street">
-                                    <div class="style-content">🚶 Street</div>
-                                </label>
-
-                                <label class="style-card">
-                                    <input type="radio" name="style" value="nature">
-                                    <div class="style-content">🌿 Nature</div>
-                                </label>
-
-                                <label class="style-card">
-                                    <input type="radio" name="style" value="fashion">
-                                    <div class="style-content">👗 Fashion</div>
-                                </label>
-
-                                <label class="style-card">
-                                    <input type="radio" name="style" value="travel">
-                                    <div class="style-content">✈ Travel</div>
-                                </label>
-
-                            </div>
-                        </div>
-
-                        <!-- Buttons -->
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg flex-grow-1">
-                                <i class="bi bi-cloud-upload"></i> Share Post
-                            </button>
-
-                            <a href="{% url 'posts:posts_feed' %}" class="btn btn-secondary btn-lg">
-                                Cancel
-                            </a>
-                        </div>
-
-                    </form>
-
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="create-post-header">
+<h2>📸 Create New Post</h2>
+<p>Share your best photo with the Photo Buddy community.</p>
 </div>
 
-<!-- Scripts -->
+
+<form method="POST" enctype="multipart/form-data" id="postForm" class="create-post-form">
+
+{% csrf_token %}
+
+<!-- IMAGE UPLOAD -->
+
+<div class="form-section">
+
+<label for="{{ form.image.id_for_label }}" class="section-label">
+Upload Photo
+</label>
+
+<div class="upload-box">
+
+{{ form.image }}
+
+<div class="upload-placeholder">
+
+<div class="upload-icon">🖼️</div>
+
+<div class="upload-text">
+<strong>Select Image</strong>
+<span>JPG, PNG, GIF (Max 5MB)</span>
+</div>
+
+</div>
+
+</div>
+
+{% if form.image.errors %}
+<div class="form-error">
+{{ form.image.errors }}
+</div>
+{% endif %}
+
+</div>
+
+
+<!-- IMAGE PREVIEW -->
+
+<div class="form-section" id="imagePreview" style="display:none;">
+
+<label class="section-label">Preview</label>
+
+<div class="preview-box">
+<img id="previewImage" src="">
+</div>
+
+</div>
+
+
+<!-- CAPTION -->
+
+<div class="form-section">
+
+<label for="{{ form.caption.id_for_label }}" class="section-label">
+Caption
+</label>
+
+<div class="caption-field">
+{{ form.caption }}
+</div>
+
+<div class="field-footer">
+<small>You can mention users using @username.</small>
+<span><span id="charCount">0</span>/2000</span>
+</div>
+
+{% if form.caption.errors %}
+<div class="form-error">
+{{ form.caption.errors }}
+</div>
+{% endif %}
+
+</div>
+
+
+<!-- PHOTO STYLE -->
+
+<div class="form-section">
+
+<label class="section-label">Photo Style</label>
+
+<p class="section-help">
+Choose the style that best represents your photo.
+</p>
+
+<div class="style-grid">
+
+<label class="style-card">
+<input type="radio" name="style" value="portrait">
+<div class="style-content">
+<span class="style-emoji">📷</span>
+<span class="style-title">Portrait</span>
+<small>People focused shots</small>
+</div>
+</label>
+
+
+<label class="style-card">
+<input type="radio" name="style" value="landscape">
+<div class="style-content">
+<span class="style-emoji">🏞</span>
+<span class="style-title">Landscape</span>
+<small>Wide scenic photos</small>
+</div>
+</label>
+
+
+<label class="style-card">
+<input type="radio" name="style" value="street">
+<div class="style-content">
+<span class="style-emoji">🚶</span>
+<span class="style-title">Street</span>
+<small>Urban everyday life</small>
+</div>
+</label>
+
+
+<label class="style-card">
+<input type="radio" name="style" value="nature">
+<div class="style-content">
+<span class="style-emoji">🌿</span>
+<span class="style-title">Nature</span>
+<small>Plants & wildlife</small>
+</div>
+</label>
+
+
+<label class="style-card">
+<input type="radio" name="style" value="fashion">
+<div class="style-content">
+<span class="style-emoji">👗</span>
+<span class="style-title">Fashion</span>
+<small>Outfits & style</small>
+</div>
+</label>
+
+</div>
+
+</div>
+
+
+<!-- BUTTONS -->
+
+<div class="form-actions">
+
+<button type="submit" class="submit-btn">
+<i class="bi bi-cloud-upload"></i>
+Share Post
+</button>
+
+<a href="{% url 'posts:posts_feed' %}" class="cancel-btn">
+Cancel
+</a>
+
+</div>
+
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+
 <script>
 
-/* Image Preview */
-document.getElementById('{{ form.image.id_for_label }}').addEventListener('change', function(e){
+/* IMAGE PREVIEW */
 
-    const file = e.target.files[0];
+const imageInput = document.getElementById('{{ form.image.id_for_label }}');
+const previewWrapper = document.getElementById('imagePreview');
+const previewImage = document.getElementById('previewImage');
 
-    if(file){
-        const reader = new FileReader();
+imageInput.addEventListener('change', function(e){
 
-        reader.onload = function(event){
-            document.getElementById('previewImage').src = event.target.result;
-            document.getElementById('imagePreview').style.display = 'block';
-        };
+const file = e.target.files[0];
 
-        reader.readAsDataURL(file);
-    }
+if(file){
+
+const reader = new FileReader();
+
+reader.onload = function(event){
+
+previewImage.src = event.target.result;
+previewWrapper.style.display = 'block';
+
+};
+
+reader.readAsDataURL(file);
+
+}else{
+
+previewWrapper.style.display = 'none';
+
+}
 
 });
 
 
-/* Character Counter */
-document.getElementById('{{ form.caption.id_for_label }}').addEventListener('input', function(){
-    document.getElementById('charCount').textContent = this.value.length;
+/* CAPTION COUNTER */
+
+const captionInput = document.getElementById('{{ form.caption.id_for_label }}');
+
+captionInput.addEventListener('input', function(){
+
+document.getElementById('charCount').textContent = this.value.length;
+
 });
 
 </script>
 
+
+
 <style>
 
-/* Card Design */
-.card{
-    border:none;
-    border-radius:14px;
-    background:linear-gradient(135deg,#667eea,#764ba2);
+.create-post-page{
+padding:40px 16px;
+background:#f8fafc;
+min-height:100vh;
 }
 
-.card-body{
-    background:white;
-    border-radius:14px;
+.create-post-wrapper{
+max-width:700px;
+margin:auto;
 }
 
-/* Buttons */
-.btn-primary{
-    background:linear-gradient(135deg,#667eea,#764ba2);
-    border:none;
+.create-post-card{
+background:white;
+border-radius:18px;
+border:1px solid #e5e7eb;
+box-shadow:0 10px 25px rgba(0,0,0,0.05);
+overflow:hidden;
 }
 
-.btn-primary:hover{
-    background:linear-gradient(135deg,#5568d3,#6a3f8f);
+
+/* HEADER */
+
+.create-post-header{
+padding:25px;
+background:linear-gradient(135deg,#2563eb,#7c3aed);
+color:white;
 }
 
-/* Inputs */
-.form-control{
-    border-radius:8px;
-    border:2px solid #e0e0e0;
+.create-post-header h2{
+margin-bottom:6px;
+font-weight:700;
 }
 
-.form-control:focus{
-    border-color:#667eea;
-    box-shadow:0 0 0 0.2rem rgba(102,126,234,.25);
+.create-post-header p{
+font-size:14px;
+opacity:.9;
 }
 
-/* Image Preview */
-#imagePreview{
-    background:#f5f5f5;
-    padding:10px;
-    border-radius:8px;
+
+.create-post-form{
+padding:25px;
 }
 
-/* STYLE SELECTOR */
+
+/* FORM SECTIONS */
+
+.form-section{
+margin-bottom:25px;
+}
+
+.section-label{
+font-weight:700;
+display:block;
+margin-bottom:8px;
+}
+
+.section-help{
+font-size:13px;
+color:#6b7280;
+margin-bottom:12px;
+}
+
+
+/* UPLOAD BOX */
+
+.upload-box{
+position:relative;
+border:2px dashed #cbd5e1;
+border-radius:14px;
+padding:20px;
+background:#f8fafc;
+cursor:pointer;
+}
+
+.upload-box:hover{
+border-color:#2563eb;
+}
+
+.upload-box input{
+position:absolute;
+inset:0;
+opacity:0;
+cursor:pointer;
+}
+
+.upload-placeholder{
+display:flex;
+gap:15px;
+align-items:center;
+}
+
+.upload-icon{
+font-size:28px;
+}
+
+.upload-text strong{
+display:block;
+}
+
+.upload-text span{
+font-size:13px;
+color:#6b7280;
+}
+
+
+/* PREVIEW */
+
+.preview-box{
+border:1px solid #e5e7eb;
+padding:10px;
+border-radius:12px;
+background:#f9fafb;
+}
+
+.preview-box img{
+width:100%;
+max-height:400px;
+object-fit:contain;
+border-radius:10px;
+}
+
+
+/* CAPTION */
+
+.caption-field textarea{
+width:100%;
+border:1px solid #d1d5db;
+border-radius:12px;
+padding:12px;
+min-height:120px;
+}
+
+.caption-field textarea:focus{
+border-color:#2563eb;
+outline:none;
+}
+
+.field-footer{
+display:flex;
+justify-content:space-between;
+font-size:12px;
+margin-top:6px;
+color:#6b7280;
+}
+
+
+/* STYLE GRID */
 
 .style-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:12px;
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
 }
 
 .style-card{
-    cursor:pointer;
+cursor:pointer;
 }
 
 .style-card input{
-    display:none;
+display:none;
 }
 
 .style-content{
-    padding:14px;
-    text-align:center;
-    border:2px solid #e0e0e0;
-    border-radius:12px;
-    background:#fafafa;
-    font-weight:500;
-    transition:.25s;
+border:1px solid #e5e7eb;
+border-radius:14px;
+padding:16px;
+display:flex;
+flex-direction:column;
+gap:4px;
+background:white;
+transition:.2s;
 }
 
-/* Hover */
 .style-content:hover{
-    border-color:#667eea;
-    background:#f4f6ff;
+border-color:#2563eb;
 }
 
-/* Selected */
 .style-card input:checked + .style-content{
-    border-color:#667eea;
-    background:linear-gradient(135deg,#667eea,#764ba2);
-    color:white;
+background:linear-gradient(135deg,#2563eb,#7c3aed);
+color:white;
+border-color:#2563eb;
+}
+
+.style-emoji{
+font-size:20px;
+}
+
+.style-title{
+font-weight:700;
+}
+
+
+/* BUTTONS */
+
+.form-actions{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+.submit-btn{
+flex:1;
+background:linear-gradient(135deg,#2563eb,#7c3aed);
+border:none;
+color:white;
+padding:12px;
+border-radius:12px;
+font-weight:700;
+cursor:pointer;
+}
+
+.cancel-btn{
+padding:12px 18px;
+background:#f3f4f6;
+border-radius:12px;
+text-decoration:none;
+color:#374151;
+}
+
+.cancel-btn:hover{
+background:#e5e7eb;
+}
+
+
+.form-error{
+background:#fee2e2;
+color:#991b1b;
+padding:8px;
+border-radius:8px;
+margin-top:8px;
+font-size:13px;
+}
+
+
+/* MOBILE */
+
+@media(max-width:640px){
+
+.style-grid{
+grid-template-columns:1fr;
+}
+
+.form-actions{
+flex-direction:column;
+}
+
 }
 
 </style>

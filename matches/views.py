@@ -34,16 +34,32 @@ def send_request(request):
                 status=400
             )
 
+        # prevent duplicate pending/accepted request
         if MatchRequest.objects.filter(
             sender=request.user,
             receiver=target_user
-        ).exists():
+        ).exclude(status="declined").exists():
             return JsonResponse(
                 {"status": "already_sent", "message": "Request already sent"},
                 status=400
             )
 
+        # prevent reverse duplicate request
+        if MatchRequest.objects.filter(
+            sender=target_user,
+            receiver=request.user,
+            status="pending"
+        ).exists():
+            return JsonResponse(
+                {
+                    "status": "already_received",
+                    "message": "This user has already sent you a request"
+                },
+                status=400
+            )
+
         MatchRequest.objects.create(sender=request.user, receiver=target_user)
+
         return JsonResponse(
             {"status": "sent", "message": "Request sent successfully"}
         )
@@ -58,14 +74,20 @@ def send_request(request):
 def request_cameraman(request):
     if request.method == "POST":
         username = request.POST.get("username")
+
         try:
             cameraman = User.objects.get(username=username, is_cameraman=True)
 
+            if cameraman == request.user:
+                return JsonResponse(
+                    {"status": "error", "message": "You cannot request yourself"},
+                    status=400
+                )
+
             if MatchRequest.objects.filter(
                 sender=request.user,
-                receiver=cameraman,
-                status="pending"
-            ).exists():
+                receiver=cameraman
+            ).exclude(status="declined").exists():
                 return JsonResponse({"status": "already_sent"})
 
             MatchRequest.objects.create(
@@ -76,75 +98,30 @@ def request_cameraman(request):
             return JsonResponse({"status": "sent"})
 
         except User.DoesNotExist:
-            return JsonResponse({"status": "user_not_found"})
+            return JsonResponse({"status": "user_not_found"}, status=404)
 
-    return JsonResponse({"status": "error", "message": "Bad method"})
-
-
-@login_required
-def match_requests(request):
-    received = MatchRequest.objects.filter(receiver=request.user, status="pending")
-    sent = MatchRequest.objects.filter(sender=request.user)
-
-    return render(request, "matches/requests.html", {
-        "received": received,
-        "sent": sent,
-    })
+    return JsonResponse({"status": "error", "message": "Bad method"}, status=400)
 
 
 @login_required
-def accept_request(request, req_id):
-    req = get_object_or_404(
-        MatchRequest,
-        id=req_id,
-        receiver=request.user
-    )
+def matches_page(request):
+    received = MatchRequest.objects.filter(
+        receiver=request.user,
+        status="pending"
+    ).select_related("sender")
 
-    req.status = "accepted"
-    req.save()
+    sent = MatchRequest.objects.filter(
+        sender=request.user
+    ).select_related("receiver")
 
-    u1, u2 = sorted([req.sender, req.receiver], key=lambda u: u.id)
-
-    Match.objects.get_or_create(
-        user1=u1,
-        user2=u2
-    )
-
-    room = ChatRoom.objects.filter(
-        Q(user1=u1, user2=u2) | Q(user1=u2, user2=u1)
-    ).first()
-
-    if not room:
-        room = ChatRoom.objects.create(
-            user1=u1,
-            user2=u2
-        )
-
-    return redirect("room", room_id=room.id)
-
-
-@login_required
-def decline_request(request, req_id):
-    req = get_object_or_404(
-        MatchRequest,
-        id=req_id,
-        receiver=request.user
-    )
-    req.status = "declined"
-    req.save()
-    return redirect("match_requests")
-
-
-@login_required
-def active_matches(request):
-    matches = (
+    accepted_requests = (
         MatchRequest.objects.filter(status="accepted", sender=request.user) |
         MatchRequest.objects.filter(status="accepted", receiver=request.user)
-    ).distinct()
+    ).select_related("sender", "receiver").distinct()
 
     matches_with_other = []
 
-    for match in matches:
+    for match in accepted_requests:
         other_user = match.receiver if match.sender == request.user else match.sender
 
         room = ChatRoom.objects.filter(
@@ -158,9 +135,55 @@ def active_matches(request):
             "room": room,
         })
 
-    return render(request, "matches/active.html", {
-        "matches": matches_with_other
+    active_tab = request.GET.get("tab", "requests")
+
+    return render(request, "matches/matches.html", {
+        "received": received,
+        "sent": sent,
+        "matches": matches_with_other,
+        "active_tab": active_tab,
     })
+
+
+@login_required
+def accept_request(request, req_id):
+    req = get_object_or_404(
+        MatchRequest,
+        id=req_id,
+        receiver=request.user,
+        status="pending"
+    )
+
+    req.status = "accepted"
+    req.save()
+
+    u1, u2 = sorted([req.sender, req.receiver], key=lambda u: u.id)
+
+    Match.objects.get_or_create(user1=u1, user2=u2)
+
+    room = ChatRoom.objects.filter(
+        Q(user1=u1, user2=u2) | Q(user1=u2, user2=u1)
+    ).first()
+
+    if not room:
+        ChatRoom.objects.create(user1=u1, user2=u2)
+
+    return redirect("/matches/?tab=active")
+
+
+@login_required
+def decline_request(request, req_id):
+    req = get_object_or_404(
+        MatchRequest,
+        id=req_id,
+        receiver=request.user,
+        status="pending"
+    )
+
+    req.status = "declined"
+    req.save()
+
+    return redirect("/matches/?tab=requests")
 
 
 @login_required
@@ -179,17 +202,14 @@ def remove_match(request, match_id):
         key=lambda u: u.id
     )
 
-    # delete Match table entry
     Match.objects.filter(
         Q(user1=u1, user2=u2) | Q(user1=u2, user2=u1)
     ).delete()
 
-    # delete chat room between these users
     ChatRoom.objects.filter(
         Q(user1=u1, user2=u2) | Q(user1=u2, user2=u1)
     ).delete()
 
-    # delete accepted request entry
     match_request.delete()
 
-    return redirect("active_matches")
+    return redirect("/matches/?tab=active")

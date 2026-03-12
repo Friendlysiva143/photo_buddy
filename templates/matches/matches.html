@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Matches | Photo Buddy{% endblock %}
+
+{% block content %}
+
+<div class="matches-container">
+
+    <h2 class="page-title">Matches</h2>
+
+    <!-- TABS -->
+    <div class="match-tabs">
+        <button
+            class="tab {% if active_tab == 'requests' %}active{% endif %}"
+            type="button"
+            onclick="showTab('requests', this)"
+        >
+            Requests
+        </button>
+
+        <button
+            class="tab {% if active_tab == 'active' %}active{% endif %}"
+            type="button"
+            onclick="showTab('active', this)"
+        >
+            Active Matches
+        </button>
+    </div>
+
+    <!-- REQUESTS TAB -->
+    <div
+        id="requests-tab"
+        class="tab-content"
+        {% if active_tab != 'requests' %}style="display:none;"{% endif %}
+    >
+        <h3 class="section-title">Requests for you</h3>
+
+        {% for r in received %}
+        <div class="request-item">
+            <div class="request-user">
+                {% if r.sender.profile_picture %}
+                    <img src="{{ r.sender.profile_picture.url }}" alt="{{ r.sender.username }}">
+                {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ r.sender.username|urlencode }}" alt="{{ r.sender.username }}">
+                {% endif %}
+
+                <div class="request-info">
+                    <strong>{{ r.sender.username }}</strong>
+                    <span>sent you a request</span>
+                </div>
+            </div>
+
+            <div class="request-actions">
+                <a href="{% url 'accept_request' r.id %}" class="btn-accept">Accept</a>
+                <a href="{% url 'decline_request' r.id %}" class="btn-decline">Decline</a>
+            </div>
+        </div>
+        {% empty %}
+        <p class="empty-text">No incoming requests</p>
+        {% endfor %}
+
+        <h3 class="section-title">Sent Requests</h3>
+
+        {% for r in sent %}
+        <div class="request-item">
+            <div class="request-user">
+                {% if r.receiver.profile_picture %}
+                    <img src="{{ r.receiver.profile_picture.url }}" alt="{{ r.receiver.username }}">
+                {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ r.receiver.username|urlencode }}" alt="{{ r.receiver.username }}">
+                {% endif %}
+
+                <div class="request-info">
+                    <strong>{{ r.receiver.username }}</strong>
+                    <span>Status: {{ r.status|title }}</span>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="empty-text">No sent requests</p>
+        {% endfor %}
+    </div>
+
+    <!-- ACTIVE MATCHES TAB -->
+    <div
+        id="active-tab"
+        class="tab-content"
+        {% if active_tab != 'active' %}style="display:none;"{% endif %}
+    >
+        {% if matches %}
+            {% for item in matches %}
+            <div class="match-item">
+
+                {% if item.room %}
+                    <a href="{% url 'room' item.room.id %}" class="match-link">
+                {% else %}
+                    <div class="match-link no-room">
+                {% endif %}
+
+                    <div class="match-user">
+                        {% if item.other_user.profile_picture %}
+                            <img src="{{ item.other_user.profile_picture.url }}" alt="{{ item.other_user.username }}">
+                        {% else %}
+                            <img src="https://ui-avatars.com/api/?name={{ item.other_user.username|urlencode }}" alt="{{ item.other_user.username }}">
+                        {% endif %}
+
+                        <div class="match-info">
+                            <strong>{{ item.other_user.username }}</strong>
+                            <span>Tap to chat</span>
+                        </div>
+                    </div>
+
+                    <i class="fas fa-chevron-right"></i>
+
+                {% if item.room %}
+                    </a>
+                {% else %}
+                    </div>
+                {% endif %}
+
+                <a href="{% url 'remove_match' item.match.id %}"
+                   class="remove-btn"
+                   onclick="return confirm('Are you sure you want to remove this match and delete the chat?');">
+                    Remove
+                </a>
+
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="empty-text">No matches yet</p>
+        {% endif %}
+    </div>
+
+</div>
+
+<style>
+.matches-container{
+    max-width: 600px;
+    margin: auto;
+    padding-top: 20px;
+}
+
+.page-title{
+    margin-bottom: 20px;
+}
+
+.match-tabs{
+    display: flex;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 20px;
+}
+
+.tab{
+    flex: 1;
+    text-align: center;
+    padding: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #555;
+    font-weight: 500;
+    font-size: 15px;
+    transition: 0.2s ease;
+}
+
+.tab.active{
+    border-bottom: 3px solid #2563eb;
+    color: #2563eb;
+}
+
+.section-title{
+    margin: 20px 0 10px;
+    font-size: 18px;
+}
+
+.request-item,
+.match-item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.request-user,
+.match-user{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.request-user img,
+.match-user img{
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.request-info,
+.match-info{
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.request-info strong,
+.match-info strong{
+    font-size: 15px;
+}
+
+.request-info span,
+.match-info span{
+    font-size: 13px;
+    color: #666;
+}
+
+.request-actions{
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.btn-accept{
+    background: #2563eb;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.btn-decline{
+    background: #eee;
+    color: #333;
+    padding: 6px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.match-link{
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    color: #000;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+    min-width: 0;
+}
+
+.match-link:hover{
+    background: #f7f7f7;
+}
+
+.no-room{
+    cursor: default;
+}
+
+.remove-btn{
+    background: #ef4444;
+    color: #fff;
+    padding: 7px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.remove-btn:hover{
+    background: #dc2626;
+}
+
+.empty-text{
+    color: #777;
+    padding: 20px 0;
+}
+
+@media (max-width: 640px){
+    .request-item,
+    .match-item{
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .request-actions{
+        width: 100%;
+    }
+
+    .btn-accept,
+    .btn-decline{
+        flex: 1;
+        text-align: center;
+    }
+
+    .remove-btn{
+        align-self: flex-end;
+    }
+
+    .match-link{
+        width: 100%;
+    }
+}
+</style>
+
+<script>
+function showTab(tabName, el) {
+    const requestsTab = document.getElementById("requests-tab");
+    const activeTab = document.getElementById("active-tab");
+
+    if (tabName === "requests") {
+        requestsTab.style.display = "block";
+        activeTab.style.display = "none";
+        window.history.replaceState({}, "", "?tab=requests");
+    } else {
+        requestsTab.style.display = "none";
+        activeTab.style.display = "block";
+        window.history.replaceState({}, "", "?tab=active");
+    }
+
+    document.querySelectorAll(".tab").forEach(tab => {
+        tab.classList.remove("active");
+    });
+
+    el.classList.add("active");
+}
+</script>
+
+{% endblock %}

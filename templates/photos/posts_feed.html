@@ -8,292 +8,412 @@
 
 <div class="feed-container">
 
-<!-- Feed Header -->
-<div class="feed-header">
+    <div class="feed-header">
+        <h2>📸 Photo Buddy Feed</h2>
 
-<h2>📸 Photo Buddy Feed</h2>
+        <a href="{% url 'posts:create_post' %}" class="create-post-btn">
+            <i class="fas fa-plus"></i> Create
+        </a>
+    </div>
 
-<a href="{% url 'posts:create_post' %}" class="create-post-btn">
-<i class="fas fa-plus"></i> Create
-</a>
+    {% for post in posts %}
+    <div class="post">
+
+        <!-- POST HEADER -->
+        <div class="post-header">
+            <a href="{% url 'posts:user_posts' post.user.username %}" class="user-info">
+                {% if post.user.profile_picture %}
+                    <img src="{{ post.user.profile_picture.url }}" alt="{{ post.user.username }}">
+                {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ post.user.username }}" alt="{{ post.user.username }}">
+                {% endif %}
+                <span>{{ post.user.username }}</span>
+            </a>
+
+            {% if request.user == post.user %}
+            <div class="post-options">
+                <a href="{% url 'posts:edit_post' post.id %}">Edit</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- POST IMAGE -->
+        <div class="post-image">
+            <a href="{% url 'posts:post_detail' post.id %}">
+                <img src="{{ post.image.url }}" alt="post">
+            </a>
+        </div>
+
+        <!-- POST ACTIONS -->
+        <div class="post-actions">
+
+            <form method="POST"
+                  action="{% url 'posts:toggle_like' post.id %}"
+                  class="like-form"
+                  data-post-id="{{ post.id }}">
+                {% csrf_token %}
+                <button type="submit"
+                        class="action-btn like-btn {% if post.is_liked %}liked{% endif %}">
+                    <i class="{% if post.is_liked %}fas{% else %}far{% endif %} fa-heart"></i>
+                </button>
+            </form>
+
+            <button type="button"
+                    class="action-btn comment-toggle-btn"
+                    data-post-id="{{ post.id }}"
+                    title="Comment">
+                <i class="far fa-comment"></i>
+            </button>
+
+        </div>
+
+        <!-- POST DETAILS -->
+        <div class="post-details">
+            <div class="likes">
+                <strong id="likes-count-{{ post.id }}">{{ post.likes_count }} likes</strong>
+            </div>
+
+            {% if post.caption %}
+            <div class="caption">
+                <strong>{{ post.user.username }}</strong>
+                {{ post.caption|format_caption|safe }}
+            </div>
+            {% endif %}
+
+            <div class="comments-preview" id="comments-preview-{{ post.id }}">
+                {% for comment in post.comments.all|slice:":2" %}
+                <div class="single-comment">
+                    <strong>{{ comment.user.username }}</strong> {{ comment.text }}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="post-time">
+                {{ post.created_at|timesince }} ago
+            </div>
+        </div>
+
+        <!-- INSTAGRAM STYLE COMMENT BOX -->
+        <div class="comment-box-wrapper" id="comment-box-wrapper-{{ post.id }}" style="display: none;">
+            <form class="comment-form" data-post-id="{{ post.id }}" action="{% url 'posts:add_comment_ajax' post.id %}" method="POST">
+                {% csrf_token %}
+                <input type="text"
+                       name="text"
+                       class="comment-input"
+                       id="comment-input-{{ post.id }}"
+                       placeholder="Add a comment..."
+                       required>
+                <button type="submit" class="comment-submit-btn">Post</button>
+            </form>
+        </div>
+
+    </div>
+    {% empty %}
+    <div class="no-posts">
+        <p>No posts yet</p>
+        <a href="{% url 'posts:create_post' %}">Create the first post</a>
+    </div>
+    {% endfor %}
 
 </div>
-
-
-{% for post in posts %}
-
-<div class="post">
-
-<!-- ================= POST HEADER ================= -->
-
-<div class="post-header">
-
-<a href="{% url 'posts:user_posts' post.user.username %}" class="user-info">
-
-{% if post.user.profile_picture %}
-<img src="{{ post.user.profile_picture.url }}">
-{% else %}
-<img src="https://ui-avatars.com/api/?name={{ post.user.username }}">
-{% endif %}
-
-<span>{{ post.user.username }}</span>
-
-</a>
-
-{% if request.user == post.user %}
-<div class="post-options">
-<a href="{% url 'posts:edit_post' post.id %}">Edit</a>
-</div>
-{% endif %}
-
-</div>
-
-
-<!-- ================= POST IMAGE ================= -->
-
-<div class="post-image">
-
-<img src="{{ post.image.url }}" alt="post">
-
-</div>
-
-
-<!-- ================= POST ACTIONS ================= -->
-
-<div class="post-actions">
-
-<form method="POST" action="{% url 'posts:toggle_like' post.id %}" class="like-form">
-{% csrf_token %}
-
-{% if post.is_liked_by|add:request.user %}
-<button class="action-btn liked">
-<i class="fas fa-heart"></i>
-</button>
-{% else %}
-<button class="action-btn">
-<i class="far fa-heart"></i>
-</button>
-{% endif %}
-
-</form>
-
-<a href="{% url 'posts:post_detail' post.id %}" class="action-btn">
-<i class="far fa-comment"></i>
-</a>
-
-</div>
-
-
-<!-- ================= POST DETAILS ================= -->
-
-<div class="post-details">
-
-<div class="likes">
-<strong>{{ post.likes_count }} likes</strong>
-</div>
-
-{% if post.caption %}
-<div class="caption">
-<strong>{{ post.user.username }}</strong>
-{{ post.caption|format_caption|safe }}
-</div>
-{% endif %}
-
-<div class="post-time">
-{{ post.created_at|timesince }} ago
-</div>
-
-</div>
-
-</div>
-
-{% empty %}
-
-<div class="no-posts">
-<p>No posts yet</p>
-<a href="{% url 'posts:create_post' %}">Create the first post</a>
-</div>
-
-{% endfor %}
-
-</div>
-
-
 
 <style>
-
-/* ================= FEED ================= */
-
-.feed-container{
-
-max-width:600px;
-margin:auto;
-padding-top:20px;
-
+.feed-container {
+    max-width: 600px;
+    margin: auto;
+    padding-top: 20px;
 }
 
-.feed-header{
-
-display:flex;
-justify-content:space-between;
-align-items:center;
-
-margin-bottom:20px;
-
+.feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-.create-post-btn{
-
-background:#2563eb;
-color:white;
-
-padding:8px 14px;
-
-border-radius:8px;
-
-text-decoration:none;
-
+.create-post-btn {
+    background: #2563eb;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
 }
 
-
-/* ================= POST ================= */
-
-.post{
-
-background:white;
-
-border:1px solid #e5e7eb;
-
-margin-bottom:30px;
-
-border-radius:8px;
-
-overflow:hidden;
-
+.post {
+    background: white;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
-
-/* ================= HEADER ================= */
-
-.post-header{
-
-display:flex;
-justify-content:space-between;
-align-items:center;
-
-padding:12px;
-
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
 }
 
-.user-info{
-
-display:flex;
-align-items:center;
-
-gap:10px;
-
-text-decoration:none;
-
-color:black;
-
-font-weight:600;
-
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: black;
+    font-weight: 600;
 }
 
-.user-info img{
-
-width:35px;
-height:35px;
-
-border-radius:50%;
-
-object-fit:cover;
-
+.user-info img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
-
-/* ================= IMAGE ================= */
-
-.post-image img{
-
-width:100%;
-max-height:600px;
-
-object-fit:cover;
-
+.post-options a {
+    text-decoration: none;
+    color: #2563eb;
+    font-size: 14px;
+    font-weight: 600;
 }
 
-
-/* ================= ACTIONS ================= */
-
-.post-actions{
-
-display:flex;
-
-gap:15px;
-
-padding:10px 12px;
-
+.post-image a {
+    display: block;
 }
 
-.action-btn{
-
-background:none;
-border:none;
-
-font-size:20px;
-
-cursor:pointer;
-
-color:#333;
-
+.post-image img {
+    width: 100%;
+    max-height: 600px;
+    object-fit: cover;
+    display: block;
 }
 
-.action-btn.liked{
-
-color:#e63946;
-
+.post-actions {
+    display: flex;
+    gap: 15px;
+    padding: 10px 12px;
+    align-items: center;
 }
 
-
-/* ================= DETAILS ================= */
-
-.post-details{
-
-padding:0 12px 12px;
-
+.like-form {
+    margin: 0;
 }
 
-.likes{
-
-margin-bottom:6px;
-
+.action-btn {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #333;
+    padding: 0;
+    transition: transform 0.15s ease, color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.caption{
-
-margin-bottom:6px;
-
+.action-btn:hover {
+    transform: scale(1.08);
 }
 
-.post-time{
-
-font-size:12px;
-color:#777;
-
+.like-btn.liked,
+.like-btn.liked i {
+    color: #ed4956;
 }
 
-
-/* ================= EMPTY ================= */
-
-.no-posts{
-
-text-align:center;
-
-padding:50px;
-
+.post-details {
+    padding: 0 12px 12px;
 }
 
+.likes {
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.caption {
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.comments-preview {
+    margin-bottom: 8px;
+}
+
+.single-comment {
+    font-size: 14px;
+    margin-bottom: 4px;
+    word-break: break-word;
+}
+
+.post-time {
+    font-size: 12px;
+    color: #777;
+}
+
+.comment-box-wrapper {
+    border-top: 1px solid #efefef;
+    padding: 10px 12px;
+}
+
+.comment-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.comment-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    padding: 8px 0;
+    background: transparent;
+}
+
+.comment-submit-btn {
+    background: none;
+    border: none;
+    color: #0095f6;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.comment-submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.no-posts {
+    text-align: center;
+    padding: 50px;
+}
 </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // LIKE AJAX
+    const likeForms = document.querySelectorAll(".like-form");
+
+    likeForms.forEach(form => {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const url = form.getAttribute("action");
+            const csrfToken = form.querySelector("[name=csrfmiddlewaretoken]").value;
+            const button = form.querySelector(".like-btn");
+            const icon = button.querySelector("i");
+            const postId = form.dataset.postId;
+            const likesCount = document.getElementById(`likes-count-${postId}`);
+
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": csrfToken,
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.liked) {
+                    button.classList.add("liked");
+                    icon.classList.remove("far");
+                    icon.classList.add("fas");
+                } else {
+                    button.classList.remove("liked");
+                    icon.classList.remove("fas");
+                    icon.classList.add("far");
+                }
+
+                likesCount.innerHTML = `<strong>${data.likes_count} likes</strong>`;
+            })
+            .catch(error => {
+                console.error("Like error:", error);
+            });
+        });
+    });
+
+
+    // TOGGLE COMMENT BOX
+    const commentToggleButtons = document.querySelectorAll(".comment-toggle-btn");
+
+    commentToggleButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const postId = this.dataset.postId;
+            const wrapper = document.getElementById(`comment-box-wrapper-${postId}`);
+            const input = document.getElementById(`comment-input-${postId}`);
+
+            if (wrapper.style.display === "none" || wrapper.style.display === "") {
+                wrapper.style.display = "block";
+                input.focus();
+            } else {
+                wrapper.style.display = "none";
+            }
+        });
+    });
+
+
+    // COMMENT AJAX
+    const commentForms = document.querySelectorAll(".comment-form");
+
+    commentForms.forEach(form => {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const postId = form.dataset.postId;
+            const url = form.getAttribute("action");
+            const csrfToken = form.querySelector("[name=csrfmiddlewaretoken]").value;
+            const input = form.querySelector(".comment-input");
+            const submitBtn = form.querySelector(".comment-submit-btn");
+            const commentsPreview = document.getElementById(`comments-preview-${postId}`);
+
+            const commentText = input.value.trim();
+
+            if (!commentText) {
+                return;
+            }
+
+            submitBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append("text", commentText);
+
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": csrfToken,
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                submitBtn.disabled = false;
+
+                if (data.success) {
+                    const newComment = document.createElement("div");
+                    newComment.className = "single-comment";
+                    newComment.innerHTML = `<strong>${data.comment.username}</strong> ${data.comment.text}`;
+
+                    commentsPreview.appendChild(newComment);
+                    input.value = "";
+                    input.focus();
+                } else {
+                    alert(data.error || "Unable to add comment.");
+                }
+            })
+            .catch(error => {
+                submitBtn.disabled = false;
+                console.error("Comment error:", error);
+                alert("Something went wrong while adding comment.");
+            });
+        });
+    });
+
+});
+</script>
 
 {% endblock %}

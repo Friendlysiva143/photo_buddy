@@ -21,7 +21,6 @@
 
 </head>
 
-
 <body>
 
 <!-- ================= HEADER ================= -->
@@ -31,14 +30,11 @@
 <div class="container">
 
 <div class="nav-brand">
-
 <a href="{% url 'home' %}">
 <i class="fas fa-camera"></i>
 <span>PHOTO BUDDY</span>
 </a>
-
 </div>
-
 
 <div class="nav-menu">
 
@@ -51,72 +47,49 @@
 <a href="{% url 'map' %}" class="nav-link">Find Buddies</a>
 
 <div class="dropdown nav-link">
-
 <button class="dropbtn">My Matches</button>
 
 <div class="dropdown-content">
-
-<a href="{% url 'active_matches' %}">Active Matches</a>
-
-<a href="{% url 'match_requests' %}">Match Requests</a>
-
+<a href="{% url 'matches_page' %}?tab=active">Active Matches</a>
+<a href="{% url 'matches_page' %}?tab=requests">Match Requests</a>
 </div>
-
 </div>
 
 <a href="{% url 'chat_list' %}" class="nav-link">Chats</a>
 
 </div>
 
-
 <div class="nav-actions">
-
 {% if request.user.is_authenticated %}
 
 <div class="user-menu">
-
 <a href="{% url 'profile' %}">
-
 <img
-src="{% if request.user.profile_picture %}
-{{ request.user.profile_picture.url }}
-{% else %}
-{% static 'images/default-avatar.png' %}
-{% endif %}"
+src="{% if request.user.profile_picture %}{{ request.user.profile_picture.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}"
 class="avatar">
-
 </a>
 
 <span>{{ request.user.username }}</span>
-
 </div>
 
 {% else %}
 
 <a href="{% url 'login' %}" class="btn btn-outline">Login</a>
-
 <a href="{% url 'register' %}" class="btn btn-primary">Sign Up</a>
 
 {% endif %}
-
 </div>
 
 </div>
 
 </nav>
 
-
 <!-- ================= MAIN CONTENT ================= -->
 
 <main class="main-content">
-
 {% block content %}
-
 {% endblock %}
-
 </main>
-
-
 
 <!-- ================= MOBILE FOOTER NAV ================= -->
 
@@ -137,11 +110,10 @@ class="avatar">
 <span>Find</span>
 </a>
 
-<a href="{% url 'match_requests' %}" class="footer-item">
+<a href="{% url 'matches_page' %}?tab=requests" class="footer-item">
 <i class="fas fa-user-friends"></i>
 <span>Matches</span>
 </a>
-
 
 <a href="{% url 'chat_list' %}" class="footer-item">
 <i class="fas fa-comments"></i>
@@ -149,7 +121,6 @@ class="avatar">
 </a>
 
 </nav>
-
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 

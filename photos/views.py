@@ -14,8 +14,9 @@ from .models import (
     Mention
 )
 from .forms import PostForm, CommentForm
-import re   
-from django.contrib.auth import get_user_model 
+import re
+from django.contrib.auth import get_user_model
+
 
 # ==================== POST FEED ====================
 
@@ -26,6 +27,9 @@ def posts_feed(request):
     paginator = Paginator(posts, 10)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
+
+    for post in page_obj.object_list:
+        post.is_liked = post.is_liked_by(request.user)
 
     return render(request, 'photos/posts_feed.html', {
         'page_obj': page_obj,
@@ -46,11 +50,7 @@ def create_post(request):
             post.save()
             form.save_m2m()
 
-            # =========================
-            # NEW: Extract @mentions
-            # =========================
-            caption = post.caption
-
+            caption = post.caption or ""
             usernames = re.findall(r'@(\w+)', caption)
 
             User = get_user_model()
@@ -74,7 +74,6 @@ def create_post(request):
         'form': form,
         'page_title': 'Create Post',
     })
-
 
 
 # ==================== USER POSTS ====================
@@ -101,7 +100,6 @@ def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     comments = post.comments.all().select_related('user')
 
-    # 🔹 LOG VIEW
     if request.user.is_authenticated:
         PostView.objects.get_or_create(
             post=post,
@@ -122,7 +120,6 @@ def post_detail(request, post_id):
             comment.user = request.user
             comment.save()
 
-            # 🔹 LOG COMMENT
             UserPostInteraction.objects.create(
                 user=request.user,
                 post=post,
@@ -156,7 +153,6 @@ def toggle_like(request, post_id):
         Like.objects.create(post=post, user=request.user)
         liked = True
 
-        # 🔹 LOG LIKE
         UserPostInteraction.objects.create(
             user=request.user,
             post=post,
@@ -171,6 +167,52 @@ def toggle_like(request, post_id):
         })
 
     return redirect('posts:post_detail', post_id=post.id)
+
+
+# ==================== AJAX COMMENT ====================
+
+@login_required
+@require_POST
+def add_comment_ajax(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    text = request.POST.get('text', '').strip()
+
+    if not text:
+        return JsonResponse({
+            'success': False,
+            'error': 'Comment cannot be empty.'
+        }, status=400)
+
+    comment = Comment.objects.create(
+        post=post,
+        user=request.user,
+        text=text
+    )
+
+    UserPostInteraction.objects.create(
+        user=request.user,
+        post=post,
+        interaction_type='comment',
+        weight=5.0
+    )
+
+    profile_picture_url = ""
+    if hasattr(request.user, 'profile_picture') and request.user.profile_picture:
+        profile_picture_url = request.user.profile_picture.url
+    else:
+        profile_picture_url = f"https://ui-avatars.com/api/?name={request.user.username}"
+
+    return JsonResponse({
+        'success': True,
+        'comment': {
+            'id': comment.id,
+            'username': comment.user.username,
+            'text': comment.text,
+            'created_at': 'Just now',
+            'profile_picture': profile_picture_url,
+        },
+        'comments_count': post.comments_count,
+    })
 
 
 # ==================== EDIT POST ====================
@@ -225,6 +267,7 @@ def delete_comment(request, comment_id):
     comment.delete()
     return redirect('posts:post_detail', post_id=post_id)
 
+
 def tag_posts(request, tag):
     posts = Post.objects.filter(
         caption__icontains=f'#{tag}'
@@ -235,15 +278,6 @@ def tag_posts(request, tag):
         'page_obj': posts
     })
 
-#from .recommendation import collaborative_recommend
 
 def recommended_posts_view(request):
-    """if request.user.is_authenticated:
-        recommended_ids = collaborative_recommend(request.user.id, top_n=10)
-        posts = Post.objects.filter(id__in=recommended_ids)
-    else:
-        # fallback for anonymous users → popular posts
-        posts = Post.objects.all().order_by('-created_at')[:10]
-
-    return render(request, 'photos/recommended.html', {'posts': posts})"""
     return render(request, 'photos/recommended.html', {'posts': []})
