@@ -79,7 +79,7 @@ def accept_request(request, req_id):
             user2=u2
         )
 
-    return redirect("chat:chat_room", room_id=room.id)
+    return redirect("room", room_id=room.id)
 @login_required
 def decline_request(request, req_id):
     req = get_object_or_404(MatchRequest, id=req_id, receiver=request.user)
