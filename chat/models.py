@@ -46,3 +46,43 @@ class Message(models.Model):
         if self.text:
             return f"{self.sender}: {self.text[:20]}"
         return f"{self.sender}: Image"
+
+
+class Call(models.Model):
+    CALL_TYPES = (
+        ("voice", "Voice"),
+        ("video", "Video"),
+    )
+
+    STATUS_CHOICES = (
+        ("calling", "Calling"),
+        ("accepted", "Accepted"),
+        ("declined", "Declined"),
+        ("ended", "Ended"),
+        ("missed", "Missed"),
+    )
+
+    room = models.ForeignKey(
+        ChatRoom,
+        on_delete=models.CASCADE,
+        related_name="calls"
+    )
+
+    caller = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="calls_made"
+    )
+
+    receiver = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="calls_received"
+    )
+
+    call_type = models.CharField(max_length=10, choices=CALL_TYPES)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="calling")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.caller} -> {self.receiver} ({self.call_type}, {self.status})"

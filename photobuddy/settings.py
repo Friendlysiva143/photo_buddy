@@ -100,13 +100,13 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
+"""
 DATABASES = {
     'default': dj_database_url.config(
         conn_max_age=600,
         ssl_require=True
     )
-}
+}"""
 CSRF_TRUSTED_ORIGINS = [
     "https://photo-buddy.onrender.com",
     "http://localhost:8000",
@@ -114,7 +114,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 
 # Local PostgreSQL configuration
-"""
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -125,7 +125,7 @@ DATABASES = {
         "PORT": "5432",
     }
 }
-"""
+
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -179,3 +179,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'EMAIL_HOST_USER'
 EMAIL_HOST_PASSWORD = 'EMAIL_HOST_PASSWORD'  # Use Gmail app password or your SMTP password
+
+AGORA_APP_ID = "57703b595b6f4038a4625de47b958d17"
+AGORA_APP_CERTIFICATE = "3dab3bb67d9741018e8b9cb287c3d96d"

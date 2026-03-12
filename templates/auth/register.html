@@ -8,28 +8,44 @@
 {% block title %}Register | Photo Buddy{% endblock %}
 
 {% block content %}
-<section class="auth-section">
+<section class="auth-section auth-register-page">
+    <div class="auth-bg-shape shape-1"></div>
+    <div class="auth-bg-shape shape-2"></div>
+    <div class="auth-bg-shape shape-3"></div>
+
     <div class="container">
-        <div class="card" style="max-width:410px;margin:auto;">
-            <h2 class="card-header">Create Your Photo Buddy Account</h2>
-            {% if messages %}
-            <div id="popup-message" class="popup-message">
-                {% for message in messages %}
-                    {{ message }}
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            <form class="auth-form" method="POST" enctype="multipart/form-data" action="{% url 'register' %}">
-                {% csrf_token %}
-                {{ form.as_p }}
-
-                <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">Sign Up</button>
-                <div class="form-foot">
-                    <span>Already have an account?</span>
-                    <a href="{% url 'login' %}" class="btn btn-outline btn-sm" style="margin-left:10px;">Login</a>
+        <div class="auth-wrapper">
+            <div class="auth-card glass-card fade-up">
+                <div class="auth-top">
+                    <div class="auth-logo-circle">📸</div>
+                    <h2 class="card-header">Create Your Photo Buddy Account</h2>
+                    <p class="auth-subtitle">
+                        Join the community and discover amazing travel photo partners.
+                    </p>
                 </div>
-            </form>
+
+                {% if messages %}
+                <div id="popup-message" class="popup-message">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <form class="auth-form" method="POST" enctype="multipart/form-data" action="{% url 'register' %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+
+                    <button type="submit" class="btn btn-primary btn-lg auth-submit-btn">
+                        <span>Sign Up</span>
+                    </button>
+
+                    <div class="form-foot">
+                        <span>Already have an account?</span>
+                        <a href="{% url 'login' %}" class="btn btn-outline btn-sm auth-switch-btn">Login</a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </section>
@@ -41,8 +57,12 @@ window.onload = function() {
     var popup = document.getElementById('popup-message');
     if (popup) {
         setTimeout(function() {
-            popup.style.display = 'none';
-        }, 3500); // Visible for 3.5 seconds
+            popup.style.opacity = '0';
+            popup.style.transform = 'translateY(-10px)';
+            setTimeout(function() {
+                popup.style.display = 'none';
+            }, 400);
+        }, 3500);
     }
 }
 </script>

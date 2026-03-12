@@ -1,38 +1,407 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/chat.css' %}">
+<script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
+
 <div class="chat-container">
 
-<div class="chat-header">
+    <div class="chat-header">
+        <div class="chat-user-info">
+            {% if request.user == room.user1 %}
+                {% if room.user2.profile_picture %}
+                    <img src="{{ room.user2.profile_picture.url }}" alt="{{ room.user2.username }}">
+                {% else %}
+                    <img src="{% static 'images/default-avatar.png' %}" alt="Default Avatar">
+                {% endif %}
+                <div class="chat-user-text">
+                    <span class="chat-username">{{ room.user2.username }}</span>
+                    <small>Chat room</small>
+                </div>
+            {% else %}
+                {% if room.user1.profile_picture %}
+                    <img src="{{ room.user1.profile_picture.url }}" alt="{{ room.user1.username }}">
+                {% else %}
+                    <img src="{% static 'images/default-avatar.png' %}" alt="Default Avatar">
+                {% endif %}
+                <div class="chat-user-text">
+                    <span class="chat-username">{{ room.user1.username }}</span>
+                    <small>Chat room</small>
+                </div>
+            {% endif %}
+        </div>
 
-<img src="{{ user_other.profile_picture.url }}">
-<span>{{ user_other.username }}</span>
+        <div class="call-buttons">
+            <button type="button" onclick="startVoiceCall()" title="Voice Call">📞</button>
+            <button type="button" onclick="startVideoCall()" title="Video Call">🎥</button>
+        </div>
+    </div>
 
+    <div id="chat-box" class="chat-messages"></div>
+
+    <div id="preview"></div>
+
+    <div class="chat-input-bar">
+        <input type="file" id="image" accept="image/*" style="display:none" onchange="previewImage()">
+        <span class="image-btn" onclick="document.getElementById('image').click()">+</span>
+        <input type="text" id="text" placeholder="Message..." onkeydown="handleEnter(event)">
+        <button type="button" onclick="sendMessage()">Send</button>
+    </div>
 </div>
 
-<div class="chat-messages">
+<div id="call-screen">
+    <div class="call-top-bar">
+        <div id="call-status">Connecting...</div>
+        <button type="button" class="end-call-btn" onclick="endCall()">End Call</button>
+    </div>
 
-{% for msg in messages %}
+    <div id="remote-player" class="video-container remote-player">
+        <div class="video-placeholder">Waiting for other user...</div>
+    </div>
 
-<div class="message-row {% if msg.from_user == user_me %}sent{% else %}received{% endif %}">
-
-<div class="message-bubble">
-
-{{ msg.content }}
-
-<div class="msg-time">
-{{ msg.timestamp|date:"H:i" }}
+    <div id="local-player" class="video-container local-player"></div>
 </div>
 
-</div>
+<script>
+/* ================= CHAT SYSTEM ================= */
 
-</div>
+function getCSRFToken() {
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith('csrftoken=')) {
+            return cookie.substring('csrftoken='.length);
+        }
+    }
+    return '';
+}
 
-{% endfor %}
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.innerText = text;
+    return div.innerHTML;
+}
 
-</div>
+function formatTime(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date)) return '';
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
 
-<form method="post" class="chat-input-bar">
-{% csrf_token %}
-<input type="text" name="content" placeholder="Message...">
-<button type="submit">Send</button>
-</form>
+function loadMessages() {
+    fetch("/chat/room/{{ room.id }}/messages/")
+        .then(response => response.json())
+        .then(data => {
+            const box = document.getElementById("chat-box");
+            box.innerHTML = "";
 
-</div>
+            data.forEach(m => {
+                const isMe = m.sender === "{{ request.user.username }}";
+
+                const row = document.createElement("div");
+                row.className = "message-row " + (isMe ? "sent" : "received");
+
+                const bubble = document.createElement("div");
+                bubble.className = "message-bubble";
+
+                let content = "";
+
+                if (m.text) {
+                    content += `<div>${escapeHtml(m.text).replace(/\n/g, "<br>")}</div>`;
+                }
+
+                if (m.image) {
+                    content += `
+                        <div>
+                            <a href="${m.image}" download target="_blank">
+                                <img src="${m.image}" alt="Chat Image">
+                            </a>
+                        </div>
+                    `;
+                }
+
+                if (m.timestamp) {
+                    content += `<div class="msg-time">${formatTime(m.timestamp)}</div>`;
+                }
+
+                bubble.innerHTML = content;
+                row.appendChild(bubble);
+                box.appendChild(row);
+            });
+
+            box.scrollTop = box.scrollHeight;
+        })
+        .catch(error => {
+            console.error("Error loading messages:", error);
+        });
+}
+
+function sendMessage() {
+    const textInput = document.getElementById("text");
+    const imageInput = document.getElementById("image");
+
+    const text = textInput.value.trim();
+    const image = imageInput.files[0];
+
+    if (!text && !image) return;
+
+    const formData = new FormData();
+    formData.append("text", text);
+
+    if (image) {
+        formData.append("image", image);
+    }
+
+    fetch("/chat/room/{{ room.id }}/send/", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCSRFToken()
+        },
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to send message");
+        }
+
+        textInput.value = "";
+        imageInput.value = "";
+        document.getElementById("preview").innerHTML = "";
+        loadMessages();
+    })
+    .catch(error => {
+        console.error("Error sending message:", error);
+        alert("Message could not be sent.");
+    });
+}
+
+function previewImage() {
+    const file = document.getElementById("image").files[0];
+    const preview = document.getElementById("preview");
+
+    preview.innerHTML = "";
+
+    if (file) {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        preview.appendChild(img);
+    }
+}
+
+function handleEnter(event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+    }
+}
+
+setInterval(loadMessages, 1000);
+window.onload = loadMessages;
+
+/* ================= AGORA CALL SYSTEM ================= */
+
+let client = null;
+let localAudioTrack = null;
+let localVideoTrack = null;
+let isJoined = false;
+let isJoining = false;
+
+function setCallStatus(text) {
+    document.getElementById("call-status").innerText = text;
+}
+
+function resetVideoContainers() {
+    document.getElementById("local-player").innerHTML = "";
+    document.getElementById("remote-player").innerHTML =
+        '<div class="video-placeholder">Waiting for other user...</div>';
+}
+
+function showCallScreen() {
+    document.getElementById("call-screen").style.display = "flex";
+}
+
+function hideCallScreen() {
+    document.getElementById("call-screen").style.display = "none";
+}
+
+async function getAgoraCredentials() {
+    const url = "/chat/agora/token/{{ room.id }}/";
+    const response = await fetch(url, {
+        method: "GET",
+        headers: {
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    });
+
+    const rawText = await response.text();
+    console.log("Agora token raw response:", rawText);
+
+    if (!response.ok) {
+        throw new Error("Token API failed: " + rawText);
+    }
+
+    let data;
+    try {
+        data = JSON.parse(rawText);
+    } catch (e) {
+        throw new Error("Token API did not return valid JSON: " + rawText);
+    }
+
+    if (!data.appId || !data.channel || !data.token || !data.uid) {
+        throw new Error("Token API missing required fields: " + rawText);
+    }
+
+    return data;
+}
+
+async function createClientIfNeeded() {
+    if (client) return;
+
+    client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+
+    client.on("user-published", async (user, mediaType) => {
+        try {
+            console.log("user-published", user, mediaType);
+            await client.subscribe(user, mediaType);
+
+            if (mediaType === "video") {
+                document.getElementById("remote-player").innerHTML = "";
+                user.videoTrack.play("remote-player");
+                setCallStatus("Connected");
+            }
+
+            if (mediaType === "audio") {
+                user.audioTrack.play();
+                setCallStatus("Connected");
+            }
+        } catch (error) {
+            console.error("Subscribe error:", error);
+        }
+    });
+
+    client.on("user-unpublished", (user, mediaType) => {
+        console.log("user-unpublished", user, mediaType);
+
+        if (mediaType === "video") {
+            document.getElementById("remote-player").innerHTML =
+                '<div class="video-placeholder">Remote video stopped</div>';
+        }
+    });
+
+    client.on("user-left", (user) => {
+        console.log("user-left", user);
+        document.getElementById("remote-player").innerHTML =
+            '<div class="video-placeholder">User left the call</div>';
+        setCallStatus("User left");
+    });
+
+    client.on("connection-state-change", (curState, revState) => {
+        console.log("Agora connection-state-change:", revState, "=>", curState);
+    });
+}
+
+async function joinCall(callType) {
+    if (isJoined || isJoining) return;
+
+    isJoining = true;
+
+    try {
+        showCallScreen();
+        resetVideoContainers();
+        setCallStatus("Getting token...");
+
+        await createClientIfNeeded();
+
+        const creds = await getAgoraCredentials();
+        console.log("Agora credentials:", creds);
+
+        setCallStatus("Joining channel...");
+        await client.join(
+            creds.appId,
+            creds.channel,
+            creds.token,
+            creds.uid
+        );
+
+        isJoined = true;
+
+        if (callType === "video") {
+            setCallStatus("Requesting camera and microphone...");
+            [localAudioTrack, localVideoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks();
+
+            localVideoTrack.play("local-player");
+
+            setCallStatus("Publishing video...");
+            await client.publish([localAudioTrack, localVideoTrack]);
+            setCallStatus("Waiting for other user...");
+        } else {
+            setCallStatus("Requesting microphone...");
+            localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+
+            document.getElementById("local-player").innerHTML =
+                '<div class="voice-only-label">Voice call started</div>';
+
+            setCallStatus("Publishing audio...");
+            await client.publish([localAudioTrack]);
+            setCallStatus("Waiting for other user...");
+        }
+
+    } catch (error) {
+        console.error("Error joining call:", error);
+
+        let message = "Could not start call";
+        if (error && error.message) {
+            message += ": " + error.message;
+        } else {
+            message += ": Unknown error";
+        }
+
+        alert(message);
+        await endCall();
+    } finally {
+        isJoining = false;
+    }
+}
+
+async function startVoiceCall() {
+    await joinCall("voice");
+}
+
+async function startVideoCall() {
+    await joinCall("video");
+}
+
+async function endCall() {
+    try {
+        if (localAudioTrack) {
+            localAudioTrack.stop();
+            localAudioTrack.close();
+            localAudioTrack = null;
+        }
+
+        if (localVideoTrack) {
+            localVideoTrack.stop();
+            localVideoTrack.close();
+            localVideoTrack = null;
+        }
+
+        if (client && isJoined) {
+            await client.leave();
+        }
+    } catch (error) {
+        console.error("Error ending call:", error);
+    } finally {
+        isJoined = false;
+        isJoining = false;
+        resetVideoContainers();
+        hideCallScreen();
+        setCallStatus("Call ended");
+    }
+}
+</script>
+
+{% endblock %}
