@@ -3,6 +3,11 @@ from django.db import models
 from django.conf import settings
 
 class CustomUser(AbstractUser):
+    GENDER_CHOICES = (
+        ('M', 'Male'),
+        ('F', 'Female'),
+    )
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
     bio = models.CharField(max_length=500, blank=True)
     profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True)
     is_cameraman = models.BooleanField(default=False)

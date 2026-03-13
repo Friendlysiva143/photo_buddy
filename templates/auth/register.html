@@ -34,7 +34,57 @@
 
                 <form class="auth-form" method="POST" enctype="multipart/form-data" action="{% url 'register' %}">
                     {% csrf_token %}
-                    {{ form.as_p }}
+
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        {{ form.username }}
+                        {{ form.username.errors }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        {{ form.email }}
+                        {{ form.email.errors }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Bio</label>
+                        {{ form.bio }}
+                        {{ form.bio.errors }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Profile Picture</label>
+                        {{ form.profile_picture }}
+                        {{ form.profile_picture.errors }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <div class="radio-group">
+                            {{ form.gender }}
+                        </div>
+                        {{ form.gender.errors }}
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <label>
+                            {{ form.is_cameraman }} Register as Professional Cameraman
+                        </label>
+                        {{ form.is_cameraman.errors }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        {{ form.password1 }}
+                        {{ form.password1.errors }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        {{ form.password2 }}
+                        {{ form.password2.errors }}
+                    </div>
 
                     <button type="submit" class="btn btn-primary btn-lg auth-submit-btn">
                         <span>Sign Up</span>

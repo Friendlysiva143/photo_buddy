@@ -3,90 +3,377 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/settings.css' %}">
+<style>
+.settings-container{
+    max-width:850px;
+    margin:60px auto;
+    padding:30px;
+    background:#ffffff;
+    border-radius:16px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.08);
+}
+
+.settings-container h2{
+    text-align:center;
+    margin-bottom:30px;
+    font-weight:700;
+    color:#333;
+}
+
+.settings-actions{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:15px;
+}
+
+.settings-actions button{
+    padding:12px 22px;
+    border-radius:10px;
+    border:none;
+    font-weight:600;
+    transition:0.3s;
+}
+
+.settings-actions button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 18px rgba(0,0,0,0.12);
+}
+
+.settings-form{
+    display:none;
+    margin-top:25px;
+    padding:25px;
+    border-radius:14px;
+    background:#f9fafc;
+    border:1px solid #e5e7eb;
+}
+
+.settings-form h4{
+    margin-bottom:18px;
+    font-weight:600;
+    color:#444;
+}
+
+.form-group{
+    margin-bottom:16px;
+}
+
+.form-group label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:600;
+    color:#374151;
+}
+
+.settings-form input[type="text"],
+.settings-form input[type="email"],
+.settings-form input[type="password"],
+.settings-form input[type="file"],
+.settings-form textarea,
+.settings-form select{
+    width:100%;
+    padding:10px 12px;
+    border-radius:8px;
+    border:1px solid #d1d5db;
+    font-size:14px;
+    background:#fff;
+}
+
+.settings-form input:focus,
+.settings-form textarea:focus,
+.settings-form select:focus{
+    outline:none;
+    border-color:#3b82f6;
+    box-shadow:0 0 0 2px rgba(59,130,246,0.15);
+}
+
+.settings-back-btn{
+    margin-bottom:15px;
+}
+
+.messages{
+    margin-top:20px;
+    list-style:none;
+    padding:0;
+}
+
+.messages li{
+    background:#ecfdf5;
+    border:1px solid #a7f3d0;
+    padding:10px 14px;
+    border-radius:8px;
+    color:#065f46;
+}
+
+.gender-options{
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+    margin-top:6px;
+}
+
+.gender-options label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 14px;
+    background:#fff;
+    border:1px solid #d1d5db;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:500;
+    color:#374151;
+    margin-bottom:0;
+}
+
+.gender-options input[type="radio"]{
+    width:auto;
+    margin:0;
+    accent-color:#2563eb;
+}
+
+.checkbox-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 14px;
+    background:#fff;
+    border:1px solid #d1d5db;
+    border-radius:10px;
+}
+
+.checkbox-row input[type="checkbox"]{
+    width:auto;
+    margin:0;
+    transform:scale(1.1);
+    accent-color:#2563eb;
+}
+
+.helptext{
+    display:block;
+    margin-top:6px;
+    font-size:12px;
+    color:#6b7280;
+}
+
+.errorlist{
+    list-style:none;
+    padding:0;
+    margin:6px 0 0 0;
+    color:#dc2626;
+    font-size:13px;
+}
+
+.current-image{
+    margin-top:10px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+}
+
+.current-image img{
+    width:80px;
+    height:80px;
+    object-fit:cover;
+    border-radius:10px;
+    border:1px solid #d1d5db;
+}
+
+.note-text{
+    margin-top:12px;
+    font-size:14px;
+    color:#4b5563;
+    line-height:1.6;
+}
+</style>
 {% endblock %}
 
 {% block title %}Settings{% endblock %}
 
 {% block content %}
 <div class="settings-container">
+
     <h2>Account Settings</h2>
-    <div class="settings-actions">
-        <button id="showEditProfile" class="btn btn-info settings-toggle">Edit Profile</button>
-        <button id="showChangePassword" class="btn btn-info settings-toggle">Change Password</button>
-        <button id="showComplaint" class="btn btn-info settings-toggle">Complaint/Message</button>
-        <button id="showDeleteAccount" class="btn btn-danger settings-toggle">Delete Account</button>
+
+    <div id="settingsActions" class="settings-actions">
+        <button id="showEditProfile" class="btn btn-info">Edit Profile</button>
+        <button id="showChangePassword" class="btn btn-info">Change Password</button>
+        <button id="showComplaint" class="btn btn-info">Complaint / Message</button>
+        <button id="showDeleteAccount" class="btn btn-danger">Delete Account</button>
     </div>
 
     <hr>
 
-    <div id="editProfileForm" class="settings-form" style="display:none;">
+    <div id="editProfileForm" class="settings-form">
+        <button type="button" class="btn btn-secondary settings-back-btn back-btn">← Back</button>
         <h4>Edit Profile</h4>
+
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ profile_form.as_p }}
-            <button type="submit" name="edit_profile" class="btn btn-info">Update Profile</button>
+
+            <div class="form-group">
+                <label for="{{ profile_form.username.id_for_label }}">Username</label>
+                {{ profile_form.username }}
+                {{ profile_form.username.errors }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ profile_form.email.id_for_label }}">Email</label>
+                {{ profile_form.email }}
+                {{ profile_form.email.errors }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ profile_form.gender.id_for_label }}">Gender</label>
+                {{ profile_form.gender }}
+                {{ profile_form.gender.errors }}
+            </div>
+
+
+            <div class="form-group">
+                <label for="{{ profile_form.bio.id_for_label }}">Bio</label>
+                {{ profile_form.bio }}
+                {{ profile_form.bio.errors }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ profile_form.profile_picture.id_for_label }}">Profile Picture</label>
+                {{ profile_form.profile_picture }}
+                {{ profile_form.profile_picture.errors }}
+
+                {% if request.user.profile_picture %}
+                <div class="current-image">
+                    <img src="{{ request.user.profile_picture.url }}" alt="Profile Picture">
+                    <span class="helptext">Current profile picture</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>Professional Cameraman</label>
+                <div class="checkbox-row">
+                    {{ profile_form.is_cameraman }}
+                    <span>Register as Professional Cameraman</span>
+                </div>
+                {{ profile_form.is_cameraman.errors }}
+            </div>
+
+            <button type="submit" name="edit_profile" class="btn btn-info">
+                Update Profile
+            </button>
         </form>
     </div>
 
-    <div id="changePasswordForm" class="settings-form" style="display:none;">
+    <div id="changePasswordForm" class="settings-form">
+        <button type="button" class="btn btn-secondary settings-back-btn back-btn">← Back</button>
         <h4>Change Password</h4>
+
         <form method="post">
             {% csrf_token %}
             {{ password_form.as_p }}
-            <button type="submit" name="change_password" class="btn btn-info">Change Password</button>
+
+            <button type="submit" name="change_password" class="btn btn-info">
+                Change Password
+            </button>
         </form>
     </div>
 
-    <div id="complaintForm" class="settings-form" style="display:none;">
-        <h4>Send Complaint/Message</h4>
-        <form method="post" >
+    <div id="complaintForm" class="settings-form">
+        <button type="button" class="btn btn-secondary settings-back-btn back-btn">← Back</button>
+
+        <h4>Send Complaint / Message</h4>
+
+        <form method="post">
             {% csrf_token %}
+
             <div class="form-group">
-                <label for="subject">Subject:</label>
-                <input id="subject" name="subject" type="text" class="form-control">
+                <label>Subject</label>
+                <input name="subject" type="text">
             </div>
+
             <div class="form-group">
-                <label for="message">Message:</label>
-                <textarea id="message" name="message" rows="4" class="form-control"></textarea>
+                <label>Message</label>
+                <textarea name="message" rows="4"></textarea>
             </div>
-            <button type="submit" name="send_message" class="btn btn-info">Send Message</button>
-            <b>send manual email to <a href="mailto:photobuddy001@gmail.com">photobuddy001@gmail.com</a> if you can't send here with your registered email id. </b>
+
+            <button type="submit" name="send_message" class="btn btn-info">
+                Send Message
+            </button>
+
+            <p class="note-text">
+                <b>Send manual email to
+                <a href="mailto:photobuddy001@gmail.com">photobuddy001@gmail.com</a>
+                if you can't send here.</b>
+            </p>
         </form>
     </div>
 
-    <div id="deleteAccountForm" class="settings-form" style="display:none;">
+    <div id="deleteAccountForm" class="settings-form">
+        <button type="button" class="btn btn-secondary settings-back-btn back-btn">← Back</button>
+
         <h4>Danger Zone</h4>
-        <form method="post" onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone!');">
+
+        <form method="post" onsubmit="return confirm('Are you sure you want to delete your account?');">
             {% csrf_token %}
-            <button type="submit" name="delete_account" class="btn btn-danger">Delete Account</button>
+
+            <button type="submit" name="delete_account" class="btn btn-danger">
+                Delete Account
+            </button>
         </form>
     </div>
 
     {% if messages %}
-        <ul class="messages">
+    <ul class="messages">
         {% for msg in messages %}
-            <li>{{ msg }}</li>
+        <li>{{ msg }}</li>
         {% endfor %}
-        </ul>
+    </ul>
     {% endif %}
+
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const forms = ['editProfileForm', 'changePasswordForm', 'complaintForm', 'deleteAccountForm'];
-    function showForm(formId) {
-        forms.forEach(id =>
-            document.getElementById(id).style.display = (id === formId ? 'block' : 'none')
-        );
+    const forms = [
+        'editProfileForm',
+        'changePasswordForm',
+        'complaintForm',
+        'deleteAccountForm'
+    ];
+
+    const settingsActions = document.getElementById('settingsActions');
+
+    function hideAll() {
+        forms.forEach(id => {
+            document.getElementById(id).style.display = 'none';
+        });
     }
+
+    function showForm(id) {
+        hideAll();
+        settingsActions.style.display = 'none';
+        document.getElementById(id).style.display = 'block';
+    }
+
+    function showMain() {
+        hideAll();
+        settingsActions.style.display = 'flex';
+    }
+
     document.getElementById('showEditProfile').onclick = () => showForm('editProfileForm');
     document.getElementById('showChangePassword').onclick = () => showForm('changePasswordForm');
     document.getElementById('showComplaint').onclick = () => showForm('complaintForm');
     document.getElementById('showDeleteAccount').onclick = () => showForm('deleteAccountForm');
-    // Optionally show edit profile as default:
-    showForm('editProfileForm');
+
+    document.querySelectorAll('.back-btn').forEach(btn => {
+        btn.onclick = showMain;
+    });
+
+    showMain();
 });
 </script>
 {% endblock %}
