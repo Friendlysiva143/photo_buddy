@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-User = get_user_model()
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
+from django.db.models import Q
+import re
+
 from .models import (
     Post,
     Like,
@@ -14,8 +16,9 @@ from .models import (
     Mention
 )
 from .forms import PostForm, CommentForm
-import re
-from django.contrib.auth import get_user_model
+from matches.models import MatchRequest, Match
+
+User = get_user_model()
 
 
 # ==================== POST FEED ====================
@@ -53,8 +56,6 @@ def create_post(request):
             caption = post.caption or ""
             usernames = re.findall(r'@(\w+)', caption)
 
-            User = get_user_model()
-
             for uname in usernames:
                 try:
                     mentioned_user = User.objects.get(username=uname)
@@ -79,18 +80,57 @@ def create_post(request):
 # ==================== USER POSTS ====================
 
 def user_posts(request, username):
-    user = get_object_or_404(User, username=username)
-    posts = Post.objects.filter(user=user).select_related('user').prefetch_related('likes', 'comments')
+    profile_user = get_object_or_404(User, username=username)
+    posts = Post.objects.filter(user=profile_user).select_related('user').prefetch_related('likes', 'comments')
 
     paginator = Paginator(posts, 12)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
 
+    posts_count = posts.count()
+
+    matches_count = Match.objects.filter(
+        Q(user1=profile_user) | Q(user2=profile_user)
+    ).count()
+
+    already_matched = False
+    request_sent = False
+    request_received = False
+    received_request_id = None
+
+    if request.user.is_authenticated and request.user != profile_user:
+        already_matched = Match.objects.filter(
+            Q(user1=request.user, user2=profile_user) |
+            Q(user1=profile_user, user2=request.user)
+        ).exists()
+
+        if not already_matched:
+            request_sent = MatchRequest.objects.filter(
+                sender=request.user,
+                receiver=profile_user,
+                status="pending"
+            ).exists()
+
+            received_req = MatchRequest.objects.filter(
+                sender=profile_user,
+                receiver=request.user,
+                status="pending"
+            ).first()
+
+            if received_req:
+                request_received = True
+                received_request_id = received_req.id
+
     return render(request, 'photos/user_posts.html', {
-        'profile_user': user,
+        'profile_user': profile_user,
         'page_obj': page_obj,
         'posts': page_obj.object_list,
-        'posts_count': posts.count(),
+        'posts_count': posts_count,
+        'matches_count': matches_count,
+        'already_matched': already_matched,
+        'request_sent': request_sent,
+        'request_received': request_received,
+        'received_request_id': received_request_id,
     })
 
 
@@ -196,7 +236,6 @@ def add_comment_ajax(request, post_id):
         weight=5.0
     )
 
-    profile_picture_url = ""
     if hasattr(request.user, 'profile_picture') and request.user.profile_picture:
         profile_picture_url = request.user.profile_picture.url
     else:

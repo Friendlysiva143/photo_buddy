@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout as django_logout
-from .models import CustomUser
+from .models import CustomUser, UserReview
 from .forms import UserReviewForm   # If you have a review form
 from photos.models import Post
 
@@ -69,6 +69,10 @@ def profile(request):
 # Feedback and logout view
 @login_required
 def feedback_and_logout(request):
+    if UserReview.objects.filter(user=request.user).exists():
+        django_logout(request)
+        return redirect('login')
+
     if request.method == 'POST':
         form = UserReviewForm(request.POST)
         if form.is_valid():
@@ -80,5 +84,5 @@ def feedback_and_logout(request):
             return redirect('login')
     else:
         form = UserReviewForm()
-    return render(request, 'feedback/review_before_logout.html', {'form': form})
 
+    return render(request, 'feedback/review_before_logout.html', {'form': form})

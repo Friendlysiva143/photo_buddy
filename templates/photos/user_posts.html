@@ -7,283 +7,367 @@
 
 <div class="profile-container">
 
-<!-- ================= PROFILE HEADER ================= -->
+    <div class="top-nav-row">
+        <a href="{% url 'posts:posts_feed' %}" class="back-feed-btn">
+            ← Back to Feed
+        </a>
+    </div>
 
-<div class="profile-header">
+    <div class="profile-header">
 
-<div class="profile-avatar">
+        <div class="profile-avatar">
+            {% if profile_user.profile_picture %}
+                <img src="{{ profile_user.profile_picture.url }}" alt="{{ profile_user.username }}">
+            {% else %}
+                <img src="https://ui-avatars.com/api/?name={{ profile_user.username }}&background=667eea&color=fff" alt="{{ profile_user.username }}">
+            {% endif %}
+        </div>
 
-{% if profile_user.profile_picture %}
-<img src="{{ profile_user.profile_picture.url }}">
-{% else %}
-<img src="https://ui-avatars.com/api/?name={{ profile_user.username }}&background=667eea&color=fff">
-{% endif %}
+        <div class="profile-info">
+            <div class="profile-top-row">
+                <h2>{{ profile_user.username }}</h2>
+
+                {% if request.user.is_authenticated and request.user != profile_user %}
+                    <div class="profile-action-buttons">
+
+                        {% if already_matched %}
+                            <button class="match-btn matched-btn" disabled>
+                                Matched
+                            </button>
+
+                        {% elif request_sent %}
+                            <div class="request-action-group">
+                                <button class="match-btn requested-btn" disabled>
+                                    Requested
+                                </button>
+                                <a href="{% url 'cancel_request' profile_user.username %}" class="match-btn cancel-btn">
+                                    Undo
+                                </a>
+                            </div>
+
+                        {% elif request_received %}
+                            <div class="request-action-group">
+                                <a href="{% url 'accept_request' received_request_id %}" class="match-btn accept-btn">
+                                    Accept
+                                </a>
+                                <a href="{% url 'decline_request' received_request_id %}" class="match-btn decline-btn">
+                                    Decline
+                                </a>
+                            </div>
+
+                        {% else %}
+                            <form method="POST" action="{% url 'send_request' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="username" value="{{ profile_user.username }}">
+                                <button type="submit" class="match-btn">
+                                    Match
+                                </button>
+                            </form>
+                        {% endif %}
+
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="profile-stats">
+                <span><strong>{{ posts_count }}</strong> posts</span>
+                <span><strong>{{ matches_count }}</strong> matches</span>
+            </div>
+
+            {% if profile_user.bio %}
+                <p class="profile-bio">{{ profile_user.bio }}</p>
+            {% else %}
+                <p class="profile-bio empty-bio">No bio added yet.</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <div class="posts-grid">
+        {% for post in posts %}
+            <a href="{% url 'posts:post_detail' post.id %}" class="post-item">
+                <img src="{{ post.image.url }}" alt="post">
+
+                <div class="post-hover">
+                    <div>
+                        <i class="fas fa-heart"></i> {{ post.likes_count }}
+                    </div>
+
+                    <div>
+                        <i class="fas fa-comment"></i> {{ post.comments_count }}
+                    </div>
+                </div>
+            </a>
+        {% empty %}
+            <div class="no-posts">
+                <p>No posts yet</p>
+
+                {% if request.user == profile_user %}
+                    <a href="{% url 'posts:create_post' %}" class="create-post-btn">
+                        Create your first post
+                    </a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
 
 </div>
-
-<div class="profile-info">
-
-<h2>{{ profile_user.username }}</h2>
-
-<div class="profile-stats">
-
-<span><strong>{{ posts_count }}</strong> posts</span>
-
-<span><strong>{{ matches_count }}</strong> matches</span>
-
-</div>
-
-<p class="profile-bio">
-{{ profile_user.bio|default:"Travel lover 📷" }}
-</p>
-
-</div>
-
-</div>
-
-
-<!-- ================= POSTS GRID ================= -->
-
-<div class="posts-grid">
-
-{% for post in posts %}
-
-<a href="{% url 'posts:post_detail' post.id %}" class="post-item">
-
-<img src="{{ post.image.url }}" alt="post">
-
-<div class="post-hover">
-
-<div>
-<i class="fas fa-heart"></i> {{ post.likes_count }}
-</div>
-
-<div>
-<i class="fas fa-comment"></i> {{ post.comments_count }}
-</div>
-
-</div>
-
-</a>
-
-{% empty %}
-
-<div class="no-posts">
-
-<p>No posts yet</p>
-
-{% if request.user == profile_user %}
-<a href="{% url 'posts:create_post' %}" class="create-post-btn">
-Create your first post
-</a>
-{% endif %}
-
-</div>
-
-{% endfor %}
-
-</div>
-
-</div>
-
 
 <style>
-
-/* ================= PROFILE ================= */
-
-.profile-container{
-
-max-width:900px;
-margin:auto;
-padding-top:20px;
-
+.profile-container {
+    max-width: 900px;
+    margin: auto;
+    padding-top: 20px;
 }
 
-.profile-header{
-
-display:flex;
-align-items:center;
-gap:40px;
-
-padding:30px 0;
-
-border-bottom:1px solid #e5e7eb;
-
+.top-nav-row {
+    margin-bottom: 18px;
 }
 
-.profile-avatar img{
-
-width:120px;
-height:120px;
-
-border-radius:50%;
-object-fit:cover;
-
+.back-feed-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: #f3f4f6;
+    color: #111827;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: 0.2s ease;
 }
 
-.profile-info h2{
-
-margin-bottom:10px;
-
+.back-feed-btn:hover {
+    background: #e5e7eb;
+    color: #111827;
 }
 
-.profile-stats{
-
-display:flex;
-gap:25px;
-
-margin-bottom:10px;
-
-font-size:16px;
-
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    padding: 30px 0;
+    border-bottom: 1px solid #e5e7eb;
 }
 
-.profile-bio{
-
-color:#555;
-
+.profile-avatar img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
-
-/* ================= POSTS GRID ================= */
-
-.posts-grid{
-
-display:grid;
-
-grid-template-columns:repeat(3,1fr);
-
-gap:6px;
-
-margin-top:20px;
-
+.profile-info {
+    flex: 1;
 }
 
-.post-item{
-
-position:relative;
-
-display:block;
-
-aspect-ratio:1/1;
-
-overflow:hidden;
-
+.profile-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
 }
 
-.post-item img{
-
-width:100%;
-height:100%;
-
-object-fit:cover;
-
-transition:transform .3s;
-
+.profile-info h2 {
+    margin: 0;
 }
 
-.post-item:hover img{
-
-transform:scale(1.05);
-
+.profile-action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-
-/* ================= HOVER ================= */
-
-.post-hover{
-
-position:absolute;
-
-top:0;
-left:0;
-right:0;
-bottom:0;
-
-background:rgba(0,0,0,0.45);
-
-display:flex;
-
-justify-content:center;
-align-items:center;
-
-gap:30px;
-
-color:white;
-
-font-weight:600;
-
-opacity:0;
-
-transition:opacity .2s;
-
+.request-action-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
-.post-item:hover .post-hover{
-
-opacity:1;
-
+.profile-stats {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 10px;
+    font-size: 16px;
 }
 
-.post-hover i{
-
-margin-right:6px;
-
+.profile-bio {
+    color: #555;
+    margin: 0;
+    line-height: 1.6;
+    white-space: pre-line;
 }
 
-
-/* ================= NO POSTS ================= */
-
-.no-posts{
-
-grid-column:1/4;
-
-text-align:center;
-
-padding:60px 0;
-
+.empty-bio {
+    color: #9ca3af;
+    font-style: italic;
 }
 
-.create-post-btn{
-
-display:inline-block;
-
-margin-top:10px;
-
-padding:10px 18px;
-
-background:#2563eb;
-
-color:white;
-
-border-radius:8px;
-
-text-decoration:none;
-
+.match-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 110px;
+    padding: 9px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s ease;
 }
 
-
-/* ================= MOBILE ================= */
-
-@media(max-width:768px){
-
-.posts-grid{
-
-grid-template-columns:repeat(3,1fr);
-
-gap:3px;
-
+.match-btn:hover {
+    background: #1d4ed8;
+    color: #fff;
 }
 
-.profile-header{
-
-flex-direction:column;
-align-items:flex-start;
-
+.requested-btn {
+    background: #9ca3af;
+    cursor: not-allowed;
 }
 
+.requested-btn:hover {
+    background: #9ca3af;
+    color: #fff;
 }
 
+.accept-btn {
+    background: #10b981;
+}
+
+.accept-btn:hover {
+    background: #059669;
+    color: #fff;
+}
+
+.decline-btn {
+    background: #ef4444;
+}
+
+.decline-btn:hover {
+    background: #dc2626;
+    color: #fff;
+}
+
+.cancel-btn {
+    background: #f59e0b;
+}
+
+.cancel-btn:hover {
+    background: #d97706;
+    color: #fff;
+}
+
+.matched-btn {
+    background: #e5e7eb;
+    color: #111827;
+    cursor: default;
+}
+
+.matched-btn:hover {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: 20px;
+}
+
+.post-item {
+    position: relative;
+    display: block;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+}
+
+.post-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.post-item:hover img {
+    transform: scale(1.05);
+}
+
+.post-hover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    color: white;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.post-item:hover .post-hover {
+    opacity: 1;
+}
+
+.post-hover i {
+    margin-right: 6px;
+}
+
+.no-posts {
+    grid-column: 1 / 4;
+    text-align: center;
+    padding: 60px 0;
+}
+
+.create-post-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 18px;
+    background: #2563eb;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.create-post-btn:hover {
+    background: #1d4ed8;
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .profile-top-row {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .posts-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 3px;
+    }
+
+    .profile-stats {
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+}
 </style>
 
 {% endblock %}

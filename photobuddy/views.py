@@ -9,13 +9,17 @@ from django.contrib import messages
 import smtplib
 from django.db.models import Avg
 from accounts.models import UserReview    # Adjust app/model name if needed
+from photos.models import Post
+
 def home(request):
     User = get_user_model()
     total_users = User.objects.count()
     average = UserReview.objects.aggregate(Avg('rating'))['rating__avg']
+    photos_exchanged = Post.objects.count()
     context = {
         'average_rating': round(average, 2) if average else None,
         'total_users': total_users,
+        'photos_exchanged': photos_exchanged,
         # ...other context variables...
     }
     return render(request, 'index.html', context)

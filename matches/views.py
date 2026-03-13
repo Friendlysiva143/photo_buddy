@@ -15,59 +15,73 @@ def send_request(request):
     if request.method == "POST" and request.user.is_authenticated:
         username = request.POST.get("username")
         if not username:
-            return JsonResponse(
-                {"status": "error", "message": "No username provided"},
-                status=400
-            )
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                return JsonResponse(
+                    {"status": "error", "message": "No username provided"},
+                    status=400
+                )
+            return redirect("posts:posts_feed")
 
         try:
             target_user = User.objects.get(username=username)
         except User.DoesNotExist:
-            return JsonResponse(
-                {"status": "user_not_found", "message": "User not found"},
-                status=404
-            )
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                return JsonResponse(
+                    {"status": "user_not_found", "message": "User not found"},
+                    status=404
+                )
+            return redirect("posts:posts_feed")
 
         if target_user == request.user:
-            return JsonResponse(
-                {"status": "error", "message": "Can't send request to yourself"},
-                status=400
-            )
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                return JsonResponse(
+                    {"status": "error", "message": "Can't send request to yourself"},
+                    status=400
+                )
+            return redirect("posts:user_posts", username=username)
 
-        # prevent duplicate pending/accepted request
         if MatchRequest.objects.filter(
             sender=request.user,
             receiver=target_user
         ).exclude(status="declined").exists():
-            return JsonResponse(
-                {"status": "already_sent", "message": "Request already sent"},
-                status=400
-            )
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                return JsonResponse(
+                    {"status": "already_sent", "message": "Request already sent"},
+                    status=400
+                )
+            return redirect("posts:user_posts", username=username)
 
-        # prevent reverse duplicate request
         if MatchRequest.objects.filter(
             sender=target_user,
             receiver=request.user,
             status="pending"
         ).exists():
-            return JsonResponse(
-                {
-                    "status": "already_received",
-                    "message": "This user has already sent you a request"
-                },
-                status=400
-            )
+            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                return JsonResponse(
+                    {
+                        "status": "already_received",
+                        "message": "This user has already sent you a request"
+                    },
+                    status=400
+                )
+            return redirect("posts:user_posts", username=username)
 
         MatchRequest.objects.create(sender=request.user, receiver=target_user)
 
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return JsonResponse(
+                {"status": "sent", "message": "Request sent successfully"}
+            )
+
+        return redirect("posts:user_posts", username=username)
+
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
         return JsonResponse(
-            {"status": "sent", "message": "Request sent successfully"}
+            {"status": "error", "message": "Invalid request"},
+            status=400
         )
 
-    return JsonResponse(
-        {"status": "error", "message": "Invalid request"},
-        status=400
-    )
+    return redirect("posts:posts_feed")
 
 
 @login_required
@@ -154,6 +168,8 @@ def accept_request(request, req_id):
         status="pending"
     )
 
+    sender_username = req.sender.username
+
     req.status = "accepted"
     req.save()
 
@@ -168,7 +184,7 @@ def accept_request(request, req_id):
     if not room:
         ChatRoom.objects.create(user1=u1, user2=u2)
 
-    return redirect("/matches/?tab=active")
+    return redirect("posts:user_posts", username=sender_username)
 
 
 @login_required
@@ -180,10 +196,12 @@ def decline_request(request, req_id):
         status="pending"
     )
 
+    sender_username = req.sender.username
+
     req.status = "declined"
     req.save()
 
-    return redirect("/matches/?tab=requests")
+    return redirect("posts:user_posts", username=sender_username)
 
 
 @login_required
@@ -213,3 +231,18 @@ def remove_match(request, match_id):
     match_request.delete()
 
     return redirect("/matches/?tab=active")
+
+@login_required
+def cancel_request(request, username):
+    target_user = get_object_or_404(User, username=username)
+
+    match_request = MatchRequest.objects.filter(
+        sender=request.user,
+        receiver=target_user,
+        status="pending"
+    ).first()
+
+    if match_request:
+        match_request.delete()
+
+    return redirect("posts:user_posts", username=username)
