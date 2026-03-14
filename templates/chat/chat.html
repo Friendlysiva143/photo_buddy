@@ -44,10 +44,29 @@
     <div id="preview"></div>
 
     <div class="chat-input-bar">
+        <!-- gallery/file -->
         <input type="file" id="image" accept="image/*" style="display:none" onchange="previewImage()">
-        <span class="image-btn" onclick="document.getElementById('image').click()">+</span>
+
+        <button type="button" class="image-btn" onclick="document.getElementById('image').click()" title="Choose image">🖼️</button>
+        <button type="button" class="image-btn" onclick="openCamera()" title="Open camera">📷</button>
+
         <input type="text" id="text" placeholder="Message..." onkeydown="handleEnter(event)">
         <button type="button" onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<!-- camera modal -->
+<div id="camera-modal" style="display:none;">
+    <div class="camera-overlay">
+        <div class="camera-box">
+            <video id="camera-video" autoplay playsinline></video>
+            <canvas id="camera-canvas" style="display:none;"></canvas>
+
+            <div class="camera-actions">
+                <button type="button" onclick="capturePhoto()">Capture</button>
+                <button type="button" onclick="closeCamera()">Close</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -64,8 +83,65 @@
     <div id="local-player" class="video-container local-player"></div>
 </div>
 
+<style>
+#preview img {
+    max-width: 160px;
+    max-height: 160px;
+    border-radius: 10px;
+    margin: 10px 0;
+}
+
+#camera-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+}
+
+.camera-overlay {
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.camera-box {
+    background: #fff;
+    padding: 16px;
+    border-radius: 14px;
+    width: 90%;
+    max-width: 420px;
+    text-align: center;
+}
+
+#camera-video {
+    width: 100%;
+    border-radius: 12px;
+    background: #000;
+}
+
+.camera-actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.camera-actions button,
+.image-btn {
+    cursor: pointer;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+</style>
+
 <script>
 /* ================= CHAT SYSTEM ================= */
+
+let cameraStream = null;
+let capturedImageFile = null;
 
 function getCSRFToken() {
     const cookies = document.cookie.split(';');
@@ -117,8 +193,8 @@ function loadMessages() {
                 if (m.image) {
                     content += `
                         <div>
-                            <a href="${m.image}" download target="_blank">
-                                <img src="${m.image}" alt="Chat Image">
+                            <a href="${m.image}" target="_blank">
+                                <img src="${m.image}" alt="Chat Image" style="max-width:220px; border-radius:10px;">
                             </a>
                         </div>
                     `;
@@ -145,7 +221,8 @@ function sendMessage() {
     const imageInput = document.getElementById("image");
 
     const text = textInput.value.trim();
-    const image = imageInput.files[0];
+    const selectedFile = imageInput.files[0];
+    const image = capturedImageFile || selectedFile;
 
     if (!text && !image) return;
 
@@ -167,9 +244,12 @@ function sendMessage() {
         if (!response.ok) {
             throw new Error("Failed to send message");
         }
-
+        return response.json();
+    })
+    .then(() => {
         textInput.value = "";
         imageInput.value = "";
+        capturedImageFile = null;
         document.getElementById("preview").innerHTML = "";
         loadMessages();
     })
@@ -183,6 +263,7 @@ function previewImage() {
     const file = document.getElementById("image").files[0];
     const preview = document.getElementById("preview");
 
+    capturedImageFile = null;
     preview.innerHTML = "";
 
     if (file) {
@@ -197,6 +278,69 @@ function handleEnter(event) {
         event.preventDefault();
         sendMessage();
     }
+}
+
+/* ================= CAMERA ================= */
+
+async function openCamera() {
+    try {
+        const modal = document.getElementById("camera-modal");
+        const video = document.getElementById("camera-video");
+
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "environment" },
+            audio: false
+        });
+
+        video.srcObject = cameraStream;
+        modal.style.display = "block";
+    } catch (error) {
+        console.error("Camera access error:", error);
+        alert("Unable to access camera. Please allow camera permission.");
+    }
+}
+
+function closeCamera() {
+    const modal = document.getElementById("camera-modal");
+    const video = document.getElementById("camera-video");
+
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+    }
+
+    video.srcObject = null;
+    modal.style.display = "none";
+}
+
+function capturePhoto() {
+    const video = document.getElementById("camera-video");
+    const canvas = document.getElementById("camera-canvas");
+    const preview = document.getElementById("preview");
+
+    const context = canvas.getContext("2d");
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob(function(blob) {
+        if (!blob) {
+            alert("Failed to capture image.");
+            return;
+        }
+
+        capturedImageFile = new File([blob], "camera-photo.jpg", { type: "image/jpeg" });
+
+        preview.innerHTML = "";
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(blob);
+        preview.appendChild(img);
+
+        document.getElementById("image").value = "";
+        closeCamera();
+    }, "image/jpeg", 0.9);
 }
 
 setInterval(loadMessages, 1000);
@@ -238,7 +382,6 @@ async function getAgoraCredentials() {
     });
 
     const rawText = await response.text();
-    console.log("Agora token raw response:", rawText);
 
     if (!response.ok) {
         throw new Error("Token API failed: " + rawText);
@@ -265,7 +408,6 @@ async function createClientIfNeeded() {
 
     client.on("user-published", async (user, mediaType) => {
         try {
-            console.log("user-published", user, mediaType);
             await client.subscribe(user, mediaType);
 
             if (mediaType === "video") {
@@ -284,23 +426,16 @@ async function createClientIfNeeded() {
     });
 
     client.on("user-unpublished", (user, mediaType) => {
-        console.log("user-unpublished", user, mediaType);
-
         if (mediaType === "video") {
             document.getElementById("remote-player").innerHTML =
                 '<div class="video-placeholder">Remote video stopped</div>';
         }
     });
 
-    client.on("user-left", (user) => {
-        console.log("user-left", user);
+    client.on("user-left", () => {
         document.getElementById("remote-player").innerHTML =
             '<div class="video-placeholder">User left the call</div>';
         setCallStatus("User left");
-    });
-
-    client.on("connection-state-change", (curState, revState) => {
-        console.log("Agora connection-state-change:", revState, "=>", curState);
     });
 }
 
@@ -317,7 +452,6 @@ async function joinCall(callType) {
         await createClientIfNeeded();
 
         const creds = await getAgoraCredentials();
-        console.log("Agora credentials:", creds);
 
         setCallStatus("Joining channel...");
         await client.join(
@@ -332,10 +466,7 @@ async function joinCall(callType) {
         if (callType === "video") {
             setCallStatus("Requesting camera and microphone...");
             [localAudioTrack, localVideoTrack] = await AgoraRTC.createMicrophoneAndCameraTracks();
-
             localVideoTrack.play("local-player");
-
-            setCallStatus("Publishing video...");
             await client.publish([localAudioTrack, localVideoTrack]);
             setCallStatus("Waiting for other user...");
         } else {
@@ -345,22 +476,13 @@ async function joinCall(callType) {
             document.getElementById("local-player").innerHTML =
                 '<div class="voice-only-label">Voice call started</div>';
 
-            setCallStatus("Publishing audio...");
             await client.publish([localAudioTrack]);
             setCallStatus("Waiting for other user...");
         }
 
     } catch (error) {
         console.error("Error joining call:", error);
-
-        let message = "Could not start call";
-        if (error && error.message) {
-            message += ": " + error.message;
-        } else {
-            message += ": Unknown error";
-        }
-
-        alert(message);
+        alert("Could not start call: " + (error.message || "Unknown error"));
         await endCall();
     } finally {
         isJoining = false;
